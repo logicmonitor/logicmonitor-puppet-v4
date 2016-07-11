@@ -1,7 +1,6 @@
 # === Class: logicmonitor::config
 #
-# Sets the account, user, and password
-# credentials for your LogicMonitor account
+# Sets the account, user, and password credentials for your LogicMonitor account
 #
 # === Parameters
 #
@@ -10,23 +9,19 @@
 # === Variables
 #
 # [account]
-#    The name of your LogicMonitor account.
-#    E.g. companyname.logicmonitor.com's account should be "companyname"
+#    The name of your LogicMonitor account. E.g. companyname.logicmonitor.com's account should be "companyname"
 #
 # [user]
-#    A username with adaquate credentials to create,
-#    modify, and delete hosts, host groups, and collectors
-#    We recommend creating a puppet only user to track changes
-#    made by Puppet in the audit log.
+#    A username with adaquate credentials to create, modify, and delete hosts, host groups, and collectors. We recommend
+#    creating a puppet only user to track changes made by Puppet in the audit log.
 #
 # [password]
-#    The password associated with the chose LogicMonitor user.
+#    The password associated with the chosen LogicMonitor user.
 #
 #
 # === Examples
 #
-# This class is for setting configuration information.
-# Does not need to be explicitly included.
+# This class is for setting configuration information. Does not need to be explicitly included.
 #
 # === Authors
 #

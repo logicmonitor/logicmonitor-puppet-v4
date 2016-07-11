@@ -16,7 +16,7 @@
 #    Must be a Hash object of property names and associated values.
 #    Set custom properties at the group level in the LogicMonitor Portal
 #
-# [*alertenable*]
+# [*disable_alerting*]
 #    Boolean value setting whether to deliver alerts on devices within this group.
 #
 # [*mode*]
@@ -41,7 +41,7 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-Puppet::Type.newtype(:device) do
+Puppet::Type.newtype(:lm_device) do
   @doc = 'Manage a LogicMonitor Device'
   ensurable
 
@@ -57,7 +57,7 @@ Puppet::Type.newtype(:device) do
     desc 'The long text description of a device'
   end
 
-  newproperty(:collector) do
+  newproperty(:lm_collector) do
     desc 'The description of the collector this device reports to.'
     validate do |value|
       unless value.class == String
@@ -66,7 +66,7 @@ Puppet::Type.newtype(:device) do
     end
   end
 
-  newproperty(:alertenable) do
+  newproperty(:disable_alerting) do
     desc 'Enable / Disable alerting for this device'
     newvalues(:true, :false)
   end

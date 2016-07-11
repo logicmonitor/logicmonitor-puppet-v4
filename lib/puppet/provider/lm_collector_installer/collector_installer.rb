@@ -11,9 +11,10 @@
 
 require 'json'
 
-Puppet::Type.type(:collector_installer).provide(:collector_installer) do
+Puppet::Type.type(:lm_collector_installer).provide(:collector_installer) do
   desc 'This provider handles the download and installation of a collector'
 
+  # Creates a Collector Installer which downloads and installs a LogicMonitor Collector
   def create
     debug 'Downloading new collector installer'
     collector = rest('setting/collectors',
@@ -41,6 +42,7 @@ Puppet::Type.type(:collector_installer).provide(:collector_installer) do
     end
   end
 
+  # Shuts down the Collector Service and Removes the installation binary from the device
   def destroy
     debug 'Uninstalling LogicMonitor collector'
     collector = rest('setting/collectors',

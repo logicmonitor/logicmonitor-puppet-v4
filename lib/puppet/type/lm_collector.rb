@@ -42,7 +42,7 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-Puppet::Type.newtype(:collector) do
+Puppet::Type.newtype(:lm_collector) do
   @doc = 'Manage a LogicMonitor Collector'
 
   ensurable

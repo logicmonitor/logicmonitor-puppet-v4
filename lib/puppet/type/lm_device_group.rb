@@ -49,7 +49,7 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-Puppet::Type.newtype(:device_group) do
+Puppet::Type.newtype(:lm_device_group) do
   @doc = 'Manage a LogicMonitor Device Group'
   ensurable
 

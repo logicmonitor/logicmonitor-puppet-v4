@@ -46,7 +46,7 @@
 #
 
 
-Puppet::Type.newtype(:collector_installer) do
+Puppet::Type.newtype(:lm_collector_installer) do
   @doc = 'Download and Install a LogicMonitor Collector'
   ensurable
 

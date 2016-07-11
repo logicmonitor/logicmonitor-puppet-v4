@@ -1,13 +1,11 @@
 # === Class: logicmonitor::collector
 #
-# Manages the creation, download and installation of
-# a LogicMonitor collector on the specified node.
+# Manages the creation, download and installation of a LogicMonitor collector on the specified node.
 #
 # === Parameters
 #
 # [install_dir]
-#    This is an optional parameter to chose the
-#    location to install the LogicMonitor collector
+#    This is an optional parameter to chose the location to install the LogicMonitor collector
 #
 # === Variables
 #
@@ -16,6 +14,7 @@
 # === Examples
 #
 # include logicmonitor::collector
+# class { 'logicmoniotor::collector':}
 #
 # === Authors
 #

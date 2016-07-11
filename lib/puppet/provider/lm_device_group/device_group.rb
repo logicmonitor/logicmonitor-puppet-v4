@@ -12,7 +12,7 @@
 require 'json'
 require 'open-uri'
 
-Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provider::Logicmonitor) do
+Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of device groups'
 
   # Prefetch device instances. All device resources will use the same HTTPS connection
@@ -42,12 +42,13 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     @connections[account]
   end
 
-
+  # Creates a Device Group based on parameters
   def create
     debug "Creating device group: \"#{resource[:fullpath]}\""
     recursive_group_create(resource[:fullpath], resource[:description], resource[:properties], resource[:alertenable])
   end
 
+  # Deletes a Device Group
   def destroy
     debug("Deleting device group: \"#{resource[:fullpath]}\"")
     device_group = get_group(resource[:fullpath], 'id')
@@ -57,6 +58,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     end
   end
 
+  # Verifies the existence of a device group
   def exists?
     debug "Checking if device group \"#{resource[:fullpath]}\" exists"
     if resource[:fullpath].eql?('/')
@@ -66,11 +68,13 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     end
   end
 
+  # Retrieve Device Group Description
   def description
     debug "Checking description for device group: \"#{resource[:fullpath]}\""
     get_device_group(resource[:fullpath],'description')['description']
   end
 
+  # Update Device Group Description
   def description=(value)
     debug "Updating description on device group: \"#{resource[:fullpath]}\""
     update_device_group(resource[:fullpath],
@@ -79,12 +83,14 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         resource[:alertenable])
   end
 
+  # Get disable_alerting status of Device Group
   def disable_alerting
     debug "Checking disable_alerting setting for device group: \"#{resource[:fullpath]}\""
     group = get_device_group(resource[:fullpath],'disableAlerting')
     group['disableAlerting'].to_s
   end
 
+  # Update disable_alerting status of Device Group
   def disable_alerting=(value)
     debug "Updating disable_alerting setting for device group: \"#{resource[:fullpath]}\""
     update_device_group(resource[:fullpath],
@@ -93,9 +99,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         value)
   end
 
-  #
-  # Property functions for checking and setting properties on a host group
-  #
+  # Retrieve Properties for device group (including password properties)
   def properties
     debug "Checking properties for device group: \"#{resource[:fullpath]}\""
     properties = Hash.new
@@ -132,6 +136,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     properties
   end
 
+  # Update properties for a Device Group
   def properties=(value)
     debug "Updating properties for device group: \"#{resource[:fullpath]}\""
     update_device_group(resource[:fullpath],
@@ -140,6 +145,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         resource[:disable_alerting])
   end
 
+  # Helper method for updating a Device Group via HTTP PATCH
   def update_device_group(fullpath, description, properties, disable_alerting)
     group = get_group(fullpath, 'id,parentId')
     group_json = build_group_json(fullpath,

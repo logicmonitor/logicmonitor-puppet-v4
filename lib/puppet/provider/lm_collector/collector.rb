@@ -11,7 +11,7 @@
 
 require 'json'
 
-Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::Logicmonitor) do
+Puppet::Type.type(:lm_collector).provide(:collector, :parent => Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of collectors'
 
   COLLECTOR_ENDPOINT = 'setting/collectors'
