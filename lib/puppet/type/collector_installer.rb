@@ -46,7 +46,7 @@
 #
 
 
-Puppet::Type.newtype(:lm_collector_installer) do
+Puppet::Type.newtype(:collector_installer) do
   @doc = 'Download and Install a LogicMonitor Collector'
   ensurable
 
@@ -60,17 +60,37 @@ Puppet::Type.newtype(:lm_collector_installer) do
 
   newparam(:architecture) do
     desc 'The architecture of the system. Either 64 or 32.'
+    validate do |value|
+      if !(value.include?'64')|| !(value.include?'32')
+        raise ArgumentError, '%s is not a valid architecture' % value
+      end
+    end
   end
 
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'account may not be nil or empty'
+      end
+    end
   end
 
   newparam(:user) do
     desc 'This is the LogicMonitor username'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'user may not be nil or empty'
+      end
+    end
   end
 
   newparam(:password) do
     desc 'This is the password for the LogicMonitor user specified'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'password may not be nil or empty'
+      end
+    end
   end
 end

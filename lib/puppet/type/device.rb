@@ -41,7 +41,7 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-Puppet::Type.newtype(:lm_device) do
+Puppet::Type.newtype(:device) do
   @doc = 'Manage a LogicMonitor Device'
   ensurable
 
@@ -57,7 +57,7 @@ Puppet::Type.newtype(:lm_device) do
     desc 'The long text description of a device'
   end
 
-  newproperty(:lm_collector) do
+  newproperty(:collector) do
     desc 'The description of the collector this device reports to.'
     validate do |value|
       unless value.class == String
@@ -66,7 +66,7 @@ Puppet::Type.newtype(:lm_device) do
     end
   end
 
-  newproperty(:disable_alerting) do
+  newproperty(:disable_alerting, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc 'Enable / Disable alerting for this device'
     newvalues(:true, :false)
   end
@@ -88,23 +88,30 @@ Puppet::Type.newtype(:lm_device) do
     end
   end
 
-  newparam(:mode) do
-    desc 'Set how strict puppet is regarding changes made on the LogicMonitor device record. Valid inputs: '\
-         '\"purge\" - puppet will remove all properties not set by puppet (for groups under puppet control) '\
-         'Additional options coming soon.'
-    newvalues(:purge)
-    defaultto :purge
-  end
-
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'account may not be nil or empty'
+      end
+    end
   end
 
   newparam(:user) do
     desc 'This is the LogicMonitor username'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'user may not be nil or empty'
+      end
+    end
   end
 
   newparam(:password) do
     desc 'This is the password for the LogicMonitor user specified'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'password may not be nil or empty'
+      end
+    end
   end
 end

@@ -44,9 +44,9 @@
 #
 
 class logicmonitor(
-  $account=$logicmonitor::config::account,
-  $user=$logicmonitor::config::user,
-  $password=$logicmonitor::config::password,
+  $account  = $logicmonitor::config::account,
+  $user     = $logicmonitor::config::user,
+  $password = $logicmonitor::config::password,
 ) inherits logicmonitor::config {
 
 }

@@ -56,7 +56,7 @@ class logicmonitor::collector(
 
   service{'logicmonitor-agent':
     ensure  => running,
-    require => Collector_installer[$::fqdn],
+    require => collector_installer[$::fqdn],
   }
 
   service{'logicmonitor-watchdog':

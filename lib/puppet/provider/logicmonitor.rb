@@ -24,18 +24,29 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   HTTP_PATCH = 'PATCH'
   HTTP_DELETE = 'DELETE'
 
+  # Device API endpoints
+  DEVICE_ENDPOINT = 'device/devices/%d'
+  DEVICES_ENDPOINT = 'device/devices'
+  DEVICE_PROPERTIES_ENDPOINT = 'device/devices/%d/properties'
+
+  # Device Group API endpoints
+  DEVICE_GROUP_ENDPOINT = 'device/groups/%d'
+  DEVICE_GROUPS_ENDPOINT = 'device/groups'
+  DEVICE_GROUP_PROPERTIES_ENDPOINT = 'device/groups/%d/properties'
+
+  # Collector API endpoints
+  COLLECTOR_ENDPOINT = 'setting/collectors/%d'
+  COLLECTORS_ENDPOINT = 'setting/collectors'
+
   # Execute a RESTful request to LogicMonitor
   # endpoint: RESTful endpoint to request
   # http_method: HTTP Method to use for RESTful request
   # query_params: Query Parameters to use in request (to modify results)
   # data: JSON data to send in HTTP POST RESTful requests
-  # download: If we are executing a download the URL will be santaba/do instead of santaba/rest
-  def rest(endpoint, http_method, query_params={}, data=nil, download=false)
-    # Verify necessary Authentication Information
-    verify_basic_auth
-
+  # download_collector: If we are executing a download the URL will be santaba/do instead of santaba/rest
+  def rest(connection, endpoint, http_method, query_params={}, data=nil, download_collector=false)
     # Build URI and add query Parameters
-    if download
+    if download_collector
       uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/do/logicmonitorsetup")
     else
       uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest/#{endpoint}")
@@ -71,7 +82,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     end
 
     # Add Authentication Information to Request (downloads still require CUP authentication)
-    if download
+    if download_collector
       query = URI.decode_www_form(uri.query) << {'c' => resource[:account], 'u' => resource[:user], 'p' => resource[:password]}
       uri.query = URI.encode_www_form query
     else
@@ -79,12 +90,16 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     end
 
     # Execute Request and Return Response
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    if download
-      http.start {|http| http.request(request) }.body
+    if connection.nil?
+      http = Net::HTTP.new(uri.host, uri.port)
     else
-      JSON.parse(http.start {|http| http.request(request) }.body)
+      http = connection
+    end
+    http.use_ssl = true
+    if download_collector
+      http.start {|dl| dl.request(request) }.body
+    else
+      JSON.parse(http.start {|call| call.request(request) }.body)
     end
   end
 
@@ -120,60 +135,6 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     "LMv1 #{resource[:access_id]}:#{signature}:#{timestamp}"
   end
 
-  # Execute a RPC to LogicMonitor
-  # action: RPC action to call
-  # args: Query Parameters to RPC action
-  def rpc(action, args={})
-    verify_basic_auth
-    if nil_or_empty?(action)
-      raise ArgumentError, 'Invalid action specified, may not be nil or empty'
-    end
-    uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rpc/#{action}?")
-    auth = {'c' => resource[:account], 'u' => resource[:user], 'p' => resource[:password]}
-    args.merge! auth
-    uri.query = URI.encode_www_form args
-    begin
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      req = Net::HTTP::Get.new(uri.request_uri)
-      response = http.request(req)
-      return JSON.parse(response.body)
-    rescue SocketError => se
-      alert "There was an issue communicating with #{url}, (#{se.message}). Please make sure everything is correct and try again."
-    rescue Exception => e
-      alert 'There was an unexpected issue.'
-      alert e.message
-      alert e.backtrace
-    end
-  end
-
-  # Helper Method to ensure that the necessary basic authentication resources exist
-  def verify_basic_auth()
-    if nil_or_empty?(resource[:account])
-      raise ArgumentError, 'Cannot retrieve account from resource'
-    end
-    if nil_or_empty?(resource[:user])
-      raise ArgumentError, 'Cannot retrieve user from resource'
-    end
-    if nil_or_empty?(resource[:password])
-      raise ArgumentError, 'Cannot retrieve password from resource'
-    end
-  end
-
-  # Helper method to ensure that the necessary token authentication resources exist
-  def verify_token_auth()
-    if nil_or_empty?(resource[:account])
-      raise ArgumentError, 'Cannot retrieve account from resource'
-    end
-    if nil_or_empty?(resource[:access_id])
-      raise ArgumentError, 'Cannot retrieve access_id from resource'
-    end
-    if nil_or_empty?(resource[:access_key])
-      raise ArgumentError, 'Cannot retrieve access_key from resource'
-    end
-  end
-
   # Helper method to determine if an object is nil or empty
   def nil_or_empty?(obj)
     if obj.nil? || obj.empty?
@@ -205,15 +166,17 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   end
 
   # Retrieve Group via fullPath
+  # connection: connection to use for executing API request
   # fullpath: full path of group location (similar to file path)
   # fields: fields needed in request (to reduce overhead we can limit what LogicMonitor responds with)
-  def get_device_group(fullpath, fields=nil)
-    group_json = rest('device/groups',
+  def get_device_group(connection, fullpath, fields=nil)
+    group_json = rest(connection,
+                      'device/groups',
                       HTTP_GET,
                       build_query_params("fullPath:#{fullpath}", fields, 1))
 
     if valid_api_response?(group_json, true)
-      return group_json['data']['items'][0]
+      group_json['data']['items'][0]
     end
   end
 
@@ -242,11 +205,12 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   end
 
   # Handles creation of all device groups
+  # connection: connection to use for executing API request
   # fullpath: full path of group location (similar to file path)
   # description: description of device group
   # properties: Hash containing name/value pairs for properties
   # disable_alerting: Enable / Disable alerting for devices in this group
-  def recursive_group_create(fullpath, description, properties, disable_alerting)
+  def recursive_group_create(connection, fullpath, description, properties, disable_alerting)
     path = fullpath.rpartition('/')
     parent_path = path[0]
     debug "Checking for parent device group: #{path[2]}"
@@ -254,7 +218,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     unless nil_or_empty?(parent_path)
       parent = get_device_group(parent_path, 'id')
       if nil_or_empty?(parent)
-        parent_ret = recursive_group_create(parent_path, nil, nil, true)
+        parent_ret = recursive_group_create(connection, parent_path, nil, nil, true)
         unless parent_ret.nil?
           parent_id = parent_ret
         end
@@ -263,10 +227,11 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
         parent_id = parent['id']
       end
     end
-    add_device_group_json = rest('/device/groups',
-                               HTTP_POST,
-                               nil,
-                               build_group_json(fullpath, description, properties, disable_alerting, parent_id))
+    add_device_group_json = rest(connection,
+                                 '/device/groups',
+                                 HTTP_POST,
+                                 nil,
+                                 build_group_json(fullpath, description, properties, disable_alerting, parent_id))
     add_device_group_json['data']['id'] if valid_api_response?(add_device_group_json)
   end
 end

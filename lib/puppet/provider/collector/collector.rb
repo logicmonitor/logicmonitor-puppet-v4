@@ -11,22 +11,21 @@
 
 require 'json'
 
-Puppet::Type.type(:lm_collector).provide(:collector, :parent => Puppet::Provider::Logicmonitor) do
+Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of collectors'
-
-  COLLECTOR_ENDPOINT = 'setting/collectors'
 
   # Creates a Collector
   def create
     debug "Creating Collector \"#{resource[:description]}\""
-    create_collector = rest(COLLECTOR_ENDPOINT, HTTP_POST, nil, build_collector_json(resource[:description]))
+    create_collector = rest(nil, COLLECTOR_ENDPOINT, HTTP_POST, nil, build_collector_json(resource[:description]))
     valid_api_response?(create_collector) ? debug create_collector : alert create_collector
   end
 
   # Deletes a Collector
   def destroy
     debug "Deleting Collector \"#{resource[:description]}\""
-    collector = rest(COLLECTOR_ENDPOINT,
+    collector = rest(nil,
+                     COLLECTORS_ENDPOINT,
                      HTTP_GET,
                      build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collector, true)
@@ -40,7 +39,8 @@ Puppet::Type.type(:lm_collector).provide(:collector, :parent => Puppet::Provider
 
   # Checks if Collector exists
   def exists?
-    collectors = rest(COLLECTOR_ENDPOINT,
+    collectors = rest(nil,
+                      COLLECTORS_ENDPOINT,
                       HTTP_GET,
                       build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collectors, true)

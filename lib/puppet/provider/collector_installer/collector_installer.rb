@@ -11,15 +11,16 @@
 
 require 'json'
 
-Puppet::Type.type(:lm_collector_installer).provide(:collector_installer) do
+Puppet::Type.type(:collector_installer).provide(:collector_installer) do
   desc 'This provider handles the download and installation of a collector'
 
   # Creates a Collector Installer which downloads and installs a LogicMonitor Collector
   def create
     debug 'Downloading new collector installer'
-    collector = rest('setting/collectors',
-                      HTTP_GET,
-                      build_query_params("description:#{resource[:description]}", 'id'), 1)
+    collector = rest(nil,
+                     COLLECTORS_ENDPOINT,
+                     HTTP_GET,
+                     build_query_params("description:#{resource[:description]}", 'id'), 1)
     if valid_api_response?(collector, true)
       debug collector
       if resource[:architecture].include?('64')
@@ -45,7 +46,8 @@ Puppet::Type.type(:lm_collector_installer).provide(:collector_installer) do
   # Shuts down the Collector Service and Removes the installation binary from the device
   def destroy
     debug 'Uninstalling LogicMonitor collector'
-    collector = rest('setting/collectors',
+    collector = rest(nil,
+                     COLLECTORS_ENDPOINT,
                      HTTP_GET,
                      build_query_params("description:#{resource[:description]}", 'id'), 1)
     if valid_api_response?(collector, true)
@@ -64,9 +66,10 @@ Puppet::Type.type(:lm_collector_installer).provide(:collector_installer) do
     end
   end
 
-  # TODO: should probably do a service running check here?
+  # Checks that a collector installation binary exists
   def exists?
-    collector = rest('setting/collectors',
+    collector = rest(nil,
+                     COLLECTORS_ENDPOINT,
                      HTTP_GET,
                      build_query_params("description:#{resource[:description]}", 'id'), 1)
     if valid_api_response?(collector, true)

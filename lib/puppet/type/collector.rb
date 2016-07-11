@@ -42,12 +42,12 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-Puppet::Type.newtype(:lm_collector) do
+Puppet::Type.newtype(:collector) do
   @doc = 'Manage a LogicMonitor Collector'
 
   ensurable
 
-  newparam(:description, :namevar => true) do
+  newproperty(:description, :namevar => true) do
     desc 'This is the name property. This is the collector description. Should be unique and tied to the host'
   end
 
@@ -56,20 +56,35 @@ Puppet::Type.newtype(:lm_collector) do
     valid_list = ['redhat', 'debian', 'amazon']
     validate do |value|
       unless valid_list.include?(value.downcase())
-        raise ArgumentError, "#{value} is not a valid distribution for a collector. Please install on a Debian, Redhat, or Amazon operating system"
+        raise ArgumentError, '%s is not a valid distribution for a collector. Please install on a Debian, Redhat, or Amazon operating system' % value
       end
     end
   end
 
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'account may not be nil or empty'
+      end
+    end
   end
 
   newparam(:user) do
     desc 'This is the LogicMonitor username'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'user may not be nil or empty'
+      end
+    end
   end
 
   newparam(:password) do
     desc 'This is the password for the LogicMonitor user specified'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'password may not be nil or empty'
+      end
+    end
   end
 end

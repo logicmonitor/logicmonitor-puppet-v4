@@ -8,11 +8,10 @@
 #
 # Copyright 2016 LogicMonitor, Inc
 #
-
 require 'json'
 require 'open-uri'
 
-Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Provider::Logicmonitor) do
+Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of device groups'
 
   # Prefetch device instances. All device resources will use the same HTTPS connection
@@ -45,15 +44,21 @@ Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Pr
   # Creates a Device Group based on parameters
   def create
     debug "Creating device group: \"#{resource[:fullpath]}\""
-    recursive_group_create(resource[:fullpath], resource[:description], resource[:properties], resource[:alertenable])
+    connection = self.class.get_connection(resource[:account])
+    recursive_group_create(connection,
+                           resource[:fullpath],
+                           resource[:description],
+                           resource[:properties],
+                           resource[:alertenable])
   end
 
   # Deletes a Device Group
   def destroy
     debug("Deleting device group: \"#{resource[:fullpath]}\"")
-    device_group = get_group(resource[:fullpath], 'id')
+    connection = self.class.get_connection(resource[:account])
+    device_group = get_device_group(connection, resource[:fullpath], 'id')
     if device_group
-      delete_device_group = rest("/device/groups/#{device_group['id']}", HTTP_DELETE)
+      delete_device_group = rest(connection, DEVICE_GROUP_ENDPOINT % device_group['id'], HTTP_DELETE)
       valid_api_response?(delete_device_group) ? nil : alert delete_device_group
     end
   end
@@ -61,23 +66,27 @@ Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Pr
   # Verifies the existence of a device group
   def exists?
     debug "Checking if device group \"#{resource[:fullpath]}\" exists"
+    connection = self.class.get_connection(resource[:account])
     if resource[:fullpath].eql?('/')
       true
     else
-      nil_or_empty?(get_group(resource[:fullpath])) ? false : true
+      nil_or_empty?(get_device_group(connection, resource[:fullpath])) ? false : true
     end
   end
 
   # Retrieve Device Group Description
   def description
     debug "Checking description for device group: \"#{resource[:fullpath]}\""
-    get_device_group(resource[:fullpath],'description')['description']
+    connection = self.class.get_connection(resource[:account])
+    get_device_group(connection, resource[:fullpath],'description')['description']
   end
 
   # Update Device Group Description
   def description=(value)
     debug "Updating description on device group: \"#{resource[:fullpath]}\""
-    update_device_group(resource[:fullpath],
+    connection = self.class.get_connection(resource[:account])
+    update_device_group(connection,
+                        resource[:fullpath],
                         value,
                         resource[:properties],
                         resource[:alertenable])
@@ -86,14 +95,15 @@ Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Pr
   # Get disable_alerting status of Device Group
   def disable_alerting
     debug "Checking disable_alerting setting for device group: \"#{resource[:fullpath]}\""
-    group = get_device_group(resource[:fullpath],'disableAlerting')
-    group['disableAlerting'].to_s
+    get_device_group(resource[:fullpath],'disableAlerting')['disableAlerting'].to_s
   end
 
   # Update disable_alerting status of Device Group
   def disable_alerting=(value)
     debug "Updating disable_alerting setting for device group: \"#{resource[:fullpath]}\""
-    update_device_group(resource[:fullpath],
+    connection = self.class.get_connection(resource[:account])
+    update_device_group(connection,
+                        resource[:fullpath],
                         resource[:description],
                         resource[:properties],
                         value)
@@ -105,7 +115,7 @@ Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Pr
     properties = Hash.new
     device_group = get_device_group(resource[:fullpath], 'id')
     if device_group
-      device_group_properties = rest("device/groups/#{device_group['id']}/properties",
+      device_group_properties = rest(DEVICE_GROUP_PROPERTIES_ENDPOINT % device_group['id'],
                                      HTTP_GET,
                                      build_query_params('type:custom,name!:system.categories,name!:puppet.update.on',
                                                         'name,value'))
@@ -115,7 +125,7 @@ Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Pr
           value = property['value']
           if value.include?('********') && resource[:properties].has_key?(name)
             debug 'Found password property. Verifying'
-            verify_device_group_property = rest("device/groups/#{device_group['id']}/properties",
+            verify_device_group_property = rest(DEVICE_GROUP_PROPERTIES_ENDPOINT % device_group['id'],
                                                 HTTP_GET,
                                                 build_query_params("type:custom,name:#{name},value:#{value}", nil, 1))
             if valid_api_response?(verify_device_group_property)
@@ -139,21 +149,23 @@ Puppet::Type.type(:lm_device_group).provide(:device_group, :parent => Puppet::Pr
   # Update properties for a Device Group
   def properties=(value)
     debug "Updating properties for device group: \"#{resource[:fullpath]}\""
-    update_device_group(resource[:fullpath],
+    connection = self.class.get_connection(resource[:account])
+    update_device_group(connection,
+                        resource[:fullpath],
                         resource[:description],
                         value,
                         resource[:disable_alerting])
   end
 
   # Helper method for updating a Device Group via HTTP PATCH
-  def update_device_group(fullpath, description, properties, disable_alerting)
-    group = get_group(fullpath, 'id,parentId')
-    group_json = build_group_json(fullpath,
+  def update_device_group(connection, fullpath, description, properties, disable_alerting)
+    device_group = get_device_group(connection, fullpath, 'id,parentId')
+    device_group_json = build_group_json(fullpath,
                                   description,
                                   properties,
                                   disable_alerting,
                                   group['parentId'])
-    update_device_group = rest("device/groups/#{group['id']}", HTTP_PATCH, nil, group_json)
+    update_device_group = rest(connection, DEVICE_GROUP_ENDPOINT % device_group['id'], HTTP_PATCH, nil, device_group_json)
     valid_api_response?(update_device_group) ? debug update_device_group : alert update_device_group
   end
 end

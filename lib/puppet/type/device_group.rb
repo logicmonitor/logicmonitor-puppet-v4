@@ -16,14 +16,9 @@
 #    Must be a Hash object of property names and associated values.
 #    Set custom properties at the group level in the LogicMonitor Portal
 #
-# [*alertenable*]
+# [*disable_alerting*]
 #    Boolean value setting whether to deliver alerts on devices within this group.
 #    Overrides device level alert enable setting
-#
-# [*mode*]
-#    Set the puppet management mode.
-#    :purge - will update all information for puppet controlled groups.
-#             Information not in puppet will be deleted.
 #
 # === Examples
 #
@@ -49,7 +44,7 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-Puppet::Type.newtype(:lm_device_group) do
+Puppet::Type.newtype(:device_group) do
   @doc = 'Manage a LogicMonitor Device Group'
   ensurable
 
@@ -78,30 +73,37 @@ Puppet::Type.newtype(:lm_device_group) do
     end
   end
 
-  newproperty(:alertenable) do
-    desc 'Set alerting at the device group level. A value of false will turn off alerting for all devices and subgroups '\
+  newproperty(:disable_alerting) do
+    desc 'Set alerting at the device group level. A value of true will turn off alerting for all devices and subgroups '\
          'in that group due to LogicMonitor\'s inheritance rules. For further reading: '\
          'http://help.logicmonitor.com/using/i-got-an-alert-now-what/how-do-prevent-alerts-on-a-host-or-group/'
     newvalues(:true, :false)
   end
 
-  newparam(:mode) do
-    desc 'Set how strict puppet is regarding changes made on the LogicMonitor device group. Valid inputs: '\
-         '\"purge\" - puppet will remove all properties not set by puppet (for groups under puppet control) '\
-         'Additional options coming soon.'
-    newvalues(:purge)
-    defaultto :purge
-  end
-
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'account may not be nil or empty'
+      end
+    end
   end
 
   newparam(:user) do
     desc 'This is the LogicMonitor username'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'user may not be nil or empty'
+      end
+    end
   end
 
   newparam(:password) do
     desc 'This is the password for the LogicMonitor user specified'
+    validate do |value|
+      if value.nil? || value.empty?
+        raise ArgumentError, 'password may not be nil or empty'
+      end
+    end
   end
 end

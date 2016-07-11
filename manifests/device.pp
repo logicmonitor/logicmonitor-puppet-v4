@@ -65,7 +65,7 @@
 class logicmonitor::device(
   $collector        = $::fqdn,
   $hostname         = $::fqdn,
-  $display_name      = $::fqdn,
+  $display_name     = $::fqdn,
   $description      = '',
   $disable_alerting = false,
   $groups           = [],
