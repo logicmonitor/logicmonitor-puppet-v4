@@ -50,7 +50,8 @@ Puppet::Type.newtype(:collector_installer) do
   @doc = 'Download and Install a LogicMonitor Collector'
   ensurable
 
-  newparam(:description, :namevar => true) do
+  newparam(:description) do
+    isnamevar
     desc 'This is the name property. This is the collector description. Should be unique and tied to the host'
   end
 
@@ -61,7 +62,7 @@ Puppet::Type.newtype(:collector_installer) do
   newparam(:architecture) do
     desc 'The architecture of the system. Either 64 or 32.'
     validate do |value|
-      if !(value.include?'64')|| !(value.include?'32')
+      unless value.include?('64') || value.include?('32')
         raise ArgumentError, '%s is not a valid architecture' % value
       end
     end

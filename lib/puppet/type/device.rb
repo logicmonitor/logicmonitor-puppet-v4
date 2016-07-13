@@ -49,7 +49,7 @@ Puppet::Type.newtype(:device) do
     desc 'The name of the device. Defaults to the fully qualified domain name. Accepts fully qualified domain name or ip address as input.'
   end
 
-  newproperty(:displayname) do
+  newproperty(:display_name) do
     desc 'The way the device name appears in your LogicMonitor account.'
   end
 
@@ -66,9 +66,10 @@ Puppet::Type.newtype(:device) do
     end
   end
 
-  newproperty(:disable_alerting, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newproperty(:disable_alerting) do
     desc 'Enable / Disable alerting for this device'
-    newvalues(:true, :false)
+    newvalues(:true,:false)
+    defaultto false
   end
 
   newproperty(:groups, :array_matching => :all) do

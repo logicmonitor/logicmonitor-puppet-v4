@@ -10,6 +10,7 @@
 #
 
 require 'json'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
 Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of collectors'
@@ -17,38 +18,45 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
   # Creates a Collector
   def create
     debug "Creating Collector \"#{resource[:description]}\""
-    create_collector = rest(nil, COLLECTOR_ENDPOINT, HTTP_POST, nil, build_collector_json(resource[:description]))
-    valid_api_response?(create_collector) ? debug create_collector : alert create_collector
+    create_collector = rest(nil,
+                            Puppet::Provider::Logicmonitor::COLLECTORS_ENDPOINT,
+                            Puppet::Provider::Logicmonitor::HTTP_POST,
+                            nil,
+                            build_collector_json(resource[:description]))
+    debug('Created Collector')
+    valid_api_response?(create_collector) ? debug(create_collector.to_s) : alert(create_collector.to_s)
+    debug('Checked Response')
   end
 
   # Deletes a Collector
   def destroy
     debug "Deleting Collector \"#{resource[:description]}\""
     collector = rest(nil,
-                     COLLECTORS_ENDPOINT,
-                     HTTP_GET,
+                     Puppet::Provider::Logicmonitor::COLLECTORS_ENDPOINT,
+                     Puppet::Provider::Logicmonitor::HTTP_GET,
                      build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collector, true)
       debug "Found Collector: #{collector}"
-      delete_collector = JSON.parse(rest("setting/collectors/#{collector['data']['items'][0]['id']}", HTTP_DELETE))
-      valid_api_response?(delete_collector, false, true) ? debug delete_collector : alert delete_collector
+      delete_collector = JSON.parse(rest("setting/collectors/#{collector['data']['items'][0]['id']}",
+                                         Puppet::Provider::Logicmonitor::HTTP_DELETE))
+      valid_api_response?(delete_collector, false, true) ? debug(delete_collector.to_s) : alert(delete_collector.to_s)
     else
-      alert collector
+      alert collector.to_s
     end
   end
 
   # Checks if Collector exists
   def exists?
+    debug "Checking if Collector exists with description \"#{resource[:description]}\""
     collectors = rest(nil,
-                      COLLECTORS_ENDPOINT,
-                      HTTP_GET,
+                      Puppet::Provider::Logicmonitor::COLLECTORS_ENDPOINT,
+                      Puppet::Provider::Logicmonitor::HTTP_GET,
                       build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collectors, true)
-      debug "Found Collector: #{collectors}"
+      debug 'Found Collector: %s' % collectors.to_s
       return true
-    else
-      alert collectors
     end
+    debug 'No Collector found for %s' % resource[:description]
     false
   end
 
@@ -67,6 +75,6 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
     collector_hash['escalatingChainId'] = 0
     collector_hash['collectorGroupId'] = 1
 
-    collector_hash.to
+    collector_hash.to_json
   end
 end

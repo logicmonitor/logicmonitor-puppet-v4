@@ -11,6 +11,7 @@
 
 require 'json'
 require 'open-uri'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
 Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of devices'
@@ -24,6 +25,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     end
     accounts.uniq!
     accounts.each do |account|
+      debug 'Starting connection for account: %s' % account
       @connections[account] = start_connection "#{account}.logicmonitor.com"
     end
   end
@@ -49,12 +51,12 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     resource[:groups].each do |group|
       if nil_or_empty?(get_device_group(connection, group, 'id'))
         debug "Couldn't find parent group #{group}. Creating it."
-        recursive_group_create(connection, group, nil, nil, true)
+        recursive_group_create(connection, group, nil, nil, false)
       end
     end
     add_device_response = rest(connection,
-                               DEVICES_ENDPOINT,
-                               HTTP_POST,
+                               Puppet::Provider::Logicmonitor::DEVICES_ENDPOINT,
+                               Puppet::Provider::Logicmonitor::HTTP_POST,
                                nil,
                                build_device_json(connection,
                                                  resource[:hostname],
@@ -63,8 +65,8 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                                  resource[:description],
                                                  resource[:groups],
                                                  resource[:properties],
-                                                 resource[:disable_alerting]))
-    valid_api_response?(add_device_response) ? debug 'Successfully Created Device' : alert add_device_response
+                                                 resource[:disable_alerting]).to_json)
+    valid_api_response?(add_device_response) ? debug('Successfully Created Device') : alert(add_device_response)
   end
 
   # Delete a Device Record for the specified resource
@@ -75,8 +77,10 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     device = get_device_by_display_name(connection, resource[:display_name], 'id') ||
              get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'id')
     if device
-      delete_device_response = rest(connection, DEVICE_ENDPOINT % device['id'], HTTP_DELETE)
-      alert delete_device_response unless valid_api_response?(delete_device_response)
+      delete_device_response = rest(connection,
+                                    Puppet::Provider::Logicmonitor::DEVICE_ENDPOINT % device['id'],
+                                    Puppet::Provider::Logicmonitor::HTTP_DELETE)
+      alert(delete_device_response) unless valid_api_response?(delete_device_response)
     end
   end
 
@@ -84,8 +88,14 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
   def exists?
     debug "Checking for device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
-    get_device_by_display_name(connection, resource[:display_name], 'id') ||
-    get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'id')
+    device = get_device_by_display_name(connection, resource[:display_name], 'id') ||
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'id')
+    if nil_or_empty?(device)
+      debug 'Device does not exist'
+      return false
+    end
+    debug 'Device exists'
+    true
   end
 
   # Retrieves display_name
@@ -94,7 +104,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     connection = self.class.get_connection(resource[:account])
     device = get_device_by_display_name(connection, resource[:display_name], 'displayName') ||
              get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'displayName')
-    device ? return device['displayName'] : nil
+    device ? device['displayName'] : nil
   end
 
   # Updates display_name
@@ -196,13 +206,13 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
       device_group_filters = device_group_filters.join '||'
 
       device_group_response = rest(connection,
-                                   DEVICE_GROUPS_ENDPOINT,
-                                   HTTP_GET,
-                                   build_query_params(device_group_filters, '||', %w(appliesTo fullPath)))
+                                   Puppet::Provider::Logicmonitor::DEVICE_GROUPS_ENDPOINT,
+                                   Puppet::Provider::Logicmonitor::HTTP_GET,
+                                   build_query_params(device_group_filters, %w(appliesTo fullPath)))
 
       if valid_api_response?(device_group_response,true)
         device_group_response['data']['items'].each do |device_group|
-          group_list.push "/#{device_group['fullPath']}" if nil_or_empty?(device_group['appliesTo'])
+          group_list.push "#{device_group['fullPath']}" if nil_or_empty?(device_group['appliesTo'])
         end
       else
         alert 'Unable to get Device Groups'
@@ -218,7 +228,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     debug "Updating the set of group memberships on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     value.each do |group|
-      recursive_group_create(connection, group, nil, nil, true) unless get_device_group(connection, group, 'id')
+      recursive_group_create(connection, group, nil, nil, false) unless get_device_group(connection, group, 'id')
     end
     update_device(connection,
                   resource[:hostname],
@@ -239,8 +249,8 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
              get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'id')
     if device
       device_properties = rest(connection,
-                               DEVICE_PROPERTIES_ENDPOINT % device['id'],
-                               HTTP_GET,
+                               Puppet::Provider::Logicmonitor::DEVICE_PROPERTIES_ENDPOINT % device['id'],
+                               Puppet::Provider::Logicmonitor::HTTP_GET,
                                build_query_params('type:custom,name!:system.categories,name!:puppet.update.on',
                                                   'name,value'))
       if valid_api_response?(device_properties, true)
@@ -250,8 +260,8 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
           if value.include?('********') && resource[:properties].has_key?(name)
             debug 'Found password property. Verifying'
             verify_device_property = rest(connection,
-                                          DEVICE_PROPERTIES_ENDPOINT % device['id'],
-                                          HTTP_GET,
+                                          Puppet::Provider::Logicmonitor::DEVICE_PROPERTIES_ENDPOINT % device['id'],
+                                          Puppet::Provider::Logicmonitor::HTTP_GET,
                                           build_query_params("type:custom,name:#{name},value:#{value}", nil, 1))
             if valid_api_response?(verify_device_property)
               debug 'Property unchanged'
@@ -298,10 +308,14 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                            properties,
                                            disable_alerting)
     if device
-      update_device_hash = device['scanConfigId'] unless device['scanConfigId'] == 0
-      update_device_hash = device['netflowCollectorId'] unless device['netflowCollectorId'] == 0
-      update_device_response = rest(connection, DEVICE_ENDPOINT % device['id'], HTTP_PATCH, nil, update_device_hash)
-      alert update_device_response unless valid_api_response?(update_device_response)
+      update_device_hash['scanConfigId'] = device['scanConfigId'] unless device['scanConfigId'] == 0
+      update_device_hash['netflowCollectorId'] = device['netflowCollectorId'] unless device['netflowCollectorId'] == 0
+      update_device_response = rest(connection,
+                                    Puppet::Provider::Logicmonitor::DEVICE_ENDPOINT % device['id'],
+                                    Puppet::Provider::Logicmonitor::HTTP_PATCH,
+                                    build_query_params(nil, nil, -1, update_device_hash.keys),
+                                    update_device_hash.to_json)
+      alert(update_device_response) unless valid_api_response?(update_device_response)
     end
   end
 
@@ -330,25 +344,17 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     # The extra fields in the device_hash are required by the REST API but are default values
     device_hash['scanConfigId'] = 0
     device_hash['netflowCollectorId'] = 0
-    device_hash.to_json
-  end
-
-  # Retrieve Agent by it's description field
-  def get_agent_by_description(connection, description, fields=nil)
-    agents_json = rest(connection,
-                       COLLECTORS_ENDPOINT,
-                       HTTP_GET,
-                       build_query_params("description:#{description}", fields, 1))
-    valid_api_response?(agents_json, true) ? agents_json['data']['items'][0] : alert agents_json
+    device_hash
   end
 
   # Retrieve device (fields) by it's display_name (unique)
   def get_device_by_display_name(connection, display_name, fields=nil)
     device_json = rest(connection,
-                       DEVICES_ENDPOINT,
-                       HTTP_GET,
+                       Puppet::Provider::Logicmonitor::DEVICES_ENDPOINT,
+                       Puppet::Provider::Logicmonitor::HTTP_GET,
                        build_query_params("displayName:#{display_name}", fields, 1))
-    valid_api_response?(device_json, true) ? device_json['data']['item'][0] : alert device_json
+    valid_api_response?(device_json, true) ? device_json['data']['items'][0] : nil
+
   end
 
   # Retrieve device (fields) by it's hostname & collector description (unique)
@@ -357,10 +363,9 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     device_filters << "collectorDescription:#{collector}"
 
     device_json = rest(connection,
-                       DEVICES_ENDPOINT,
-                       HTTP_GET,
+                       Puppet::Provider::Logicmonitor::DEVICES_ENDPOINT,
+                       Puppet::Provider::Logicmonitor::HTTP_GET,
                        build_query_params(device_filters.join(','), fields, 1))
-
-    valid_api_response?(device_json, true) ? device_json['data']['item'][0] : alert device_json
+    valid_api_response?(device_json, true) ? device_json['data']['items'][0] : nil
   end
 end

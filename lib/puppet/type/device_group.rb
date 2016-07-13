@@ -48,11 +48,11 @@ Puppet::Type.newtype(:device_group) do
   @doc = 'Manage a LogicMonitor Device Group'
   ensurable
 
-  newparam(:fullpath, :namevar => true) do
+  newparam(:full_path, :namevar => true) do
     desc 'The full path including all parent groups. Format: \"/parent/child\"'
     validate do |value|
-      unless value.start_with?('/')
-        raise ArgumentError, "#{value} is not a valid path"
+      if value.start_with?('/')
+        value.slice! 0
       end
     end
   end

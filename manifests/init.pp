@@ -26,8 +26,8 @@
 # With parameters:
 #   class{ "logicmonitor":
 #     account             => "mycompany",
-#     $user               => "me",
-#     $password           => "password",
+#     user                => "me",
+#     password            => "password",
 #   }
 #
 # Using logicmonitor::config:
@@ -44,9 +44,11 @@
 #
 
 class logicmonitor(
-  $account  = $logicmonitor::config::account,
-  $user     = $logicmonitor::config::user,
-  $password = $logicmonitor::config::password,
-) inherits logicmonitor::config {
-
+  $account  = undef,
+  $user     = undef,
+  $password = undef,
+) {
+  validate_string($account)
+  validate_string($user)
+  validate_string($password)
 }

@@ -14,10 +14,12 @@ require 'net/http'
 require 'net/https'
 require 'uri'
 require 'openssl'
-require 'Base64'
+require 'base64'
+require 'json'
 require 'date'
 
 class Puppet::Provider::Logicmonitor < Puppet::Provider
+
   HTTP_POST = 'POST'
   HTTP_GET = 'GET'
   HTTP_PUT = 'PUT'
@@ -51,27 +53,37 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     else
       uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest/#{endpoint}")
     end
-    uri.query = URI.encode_www_form query_params
+    debug 'Created URI Object: %s' % uri.request_uri
+    debug 'HTTP Method: %s' % http_method
+    debug 'Query Parameters: %s' % query_params.to_s
+    debug 'Data: %s' % data.to_s
+    debug '-----------------------'
+
+    if download_collector
+      auth_query_params = {'c' => resource[:account], 'u' => resource[:user], 'p' => resource[:password]}
+      if nil_or_empty?(query_params)
+        query = auth_query_params
+      else
+        query = query_params.merge auth_query_params
+      end
+      uri.query = URI.encode_www_form query
+    else
+      uri.query = URI.encode_www_form query_params unless nil_or_empty?(query_params)
+    end
 
     # Build Request Object
     request = nil
     if http_method.upcase == HTTP_POST
+      raise ArgumentError, 'Invalid data for HTTP POST request' if nil_or_empty? data
       request = Net::HTTP::Post.new uri.request_uri, {'Content-Type' => 'application/json'}
-      if nil_or_empty?(data)
-        raise ArgumentError, 'Invalid data for HTTP POST request'
-      end
       request.body = data
     elsif http_method.upcase == HTTP_PUT
+      raise ArgumentError, 'Invalid data for HTTP PUT request' if nil_or_empty? data
       request = Net::HTTP::Put.new uri.request_uri, {'Content-Type' => 'application/json'}
-      if nil_or_empty?(data)
-        raise ArgumentError, 'Invalid data for HTTP PUT request'
-      end
       request.body = data
     elsif http_method.upcase == HTTP_PATCH
+      raise ArgumentError, 'Invalid data for HTTP PATCH request' if nil_or_empty? data
       request = Net::HTTP::Patch.new uri.request_uri, {'Content-Type' => 'application/json'}
-      if nil_or_empty?(data)
-        raise ArgumentError, 'Invalid data for HTTP PATCH request'
-      end
       request.body = data
     elsif http_method.upcase == HTTP_GET
       request = Net::HTTP::Get.new uri.request_uri
@@ -82,24 +94,24 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     end
 
     # Add Authentication Information to Request (downloads still require CUP authentication)
-    if download_collector
-      query = URI.decode_www_form(uri.query) << {'c' => resource[:account], 'u' => resource[:user], 'p' => resource[:password]}
-      uri.query = URI.encode_www_form query
-    else
-      request.basic_auth resource[:user], resource[:password]
-    end
+    request.basic_auth resource[:user], resource[:password] unless download_collector
 
     # Execute Request and Return Response
     if connection.nil?
       http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      http.start
     else
       http = connection
     end
-    http.use_ssl = true
+
     if download_collector
-      http.start {|dl| dl.request(request) }.body
+      http.request(request).body
     else
-      JSON.parse(http.start {|call| call.request(request) }.body)
+      resp = http.request(request).body
+      debug 'Response: %s' % resp
+      JSON.parse(resp)
     end
   end
 
@@ -107,7 +119,8 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # filter: Filters the response according to the operator and value specified. Example: 'id>4'
   # fields: Filters the response to only include the following fields for each object
   # size: The number of results to display
-  def build_query_params(filter=[], fields=[], size=-1)
+  # patch_ields: If we are preparing to perform an HTTP PATCH, we need to specify which fields we are updating
+  def build_query_params(filter=[], fields=[], size=-1, patch_fields=[])
     query_params = Hash.new
     unless nil_or_empty?(filter)
       query_params['filter'] = filter
@@ -123,6 +136,9 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     end
     unless size <= 0
       query_params['size'] = size
+    end
+    unless nil_or_empty?(patch_fields)
+      query_params['patchFields'] = patch_fields.join(',')
     end
     query_params
   end
@@ -165,29 +181,39 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     false
   end
 
+  # Retrieve Agent by it's description field
+  # connection: connection to use for executing API request
+  # description: description of collector (usually defaults to its hostname)
+  # fields: any fields that should be returned specifically (defaults to nil)
+  def get_agent_by_description(connection, description, fields=nil)
+    agents_json = rest(connection,
+                       COLLECTORS_ENDPOINT,
+                       HTTP_GET,
+                       build_query_params("description:#{description}", fields, 1))
+    valid_api_response?(agents_json, true) ? agents_json['data']['items'][0] : nil
+  end
+
   # Retrieve Group via fullPath
   # connection: connection to use for executing API request
-  # fullpath: full path of group location (similar to file path)
+  # full_path: full path of group location (similar to file path)
   # fields: fields needed in request (to reduce overhead we can limit what LogicMonitor responds with)
-  def get_device_group(connection, fullpath, fields=nil)
+  def get_device_group(connection, full_path, fields=nil)
     group_json = rest(connection,
                       'device/groups',
                       HTTP_GET,
-                      build_query_params("fullPath:#{fullpath}", fields, 1))
+                      build_query_params("fullPath:#{full_path}", fields, 1))
 
-    if valid_api_response?(group_json, true)
-      group_json['data']['items'][0]
-    end
+    valid_api_response?(group_json, true) ? group_json['data']['items'][0] : nil
   end
 
   # Builds JSON for creating or updating a LogicMonitor device group
-  # fullpath: full path of group location (similar to file path)
+  # full_path: full path of group location (similar to file path)
   # description: description of device group
   # properties: Hash containing name/value pairs for properties
   # disable_alerting: Enable / Disable alerting for devices in this group
   # parent_id: device group ID of parent group (root level device group ID == 1)
-  def build_group_json(fullpath, description, properties, disable_alerting, parent_id)
-    path = fullpath.rpartition('/')
+  def build_group_json(full_path, description, properties, disable_alerting, parent_id)
+    path = full_path.rpartition('/')
     group_hash = {'name' => path[2]}
     group_hash['parentId'] = parent_id
     group_hash['disableAlerting'] = disable_alerting
@@ -201,17 +227,17 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
       end
       group_hash['customProperties'] = custom_properties
     end
-    group_hash.to_json
+    group_hash
   end
 
   # Handles creation of all device groups
   # connection: connection to use for executing API request
-  # fullpath: full path of group location (similar to file path)
+  # full_path: full path of group location (similar to file path)
   # description: description of device group
   # properties: Hash containing name/value pairs for properties
   # disable_alerting: Enable / Disable alerting for devices in this group
-  def recursive_group_create(connection, fullpath, description, properties, disable_alerting)
-    path = fullpath.rpartition('/')
+  def recursive_group_create(connection, full_path, description, properties, disable_alerting)
+    path = full_path.rpartition('/')
     parent_path = path[0]
     debug "Checking for parent device group: #{path[2]}"
     parent_id = 1
@@ -227,11 +253,12 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
         parent_id = parent['id']
       end
     end
+    debug 'Creating Group: %s' % full_path
     add_device_group_json = rest(connection,
-                                 '/device/groups',
+                                 DEVICE_GROUPS_ENDPOINT,
                                  HTTP_POST,
                                  nil,
-                                 build_group_json(fullpath, description, properties, disable_alerting, parent_id))
+                                 build_group_json(full_path, description, properties, disable_alerting, parent_id).to_json)
     add_device_group_json['data']['id'] if valid_api_response?(add_device_group_json)
   end
 end

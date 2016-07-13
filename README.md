@@ -53,7 +53,7 @@ Upcoming features:
 
 ## Requirements
 
-** Ruby (1.8.7 or 1.9.3) and Puppet 4.X **
+** Ruby (1.9.3) and Puppet 4.X **
 
 This is a module written for Puppet 4
 

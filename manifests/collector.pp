@@ -27,40 +27,10 @@
 #
 
 class logicmonitor::collector(
-  $install_dir='/usr/local/logicmonitor/'
+  $install_dir      = '/usr/local/logicmonitor/',
+  $agent_service    = 'logicmonitor-agent',
+  $watchdog_service = 'logicmonitor-watchdog'
 ) inherits logicmonitor {
-
-  file { $install_dir:
-    ensure => directory,
-    mode   => '0755',
-    before => Collector_installer[$::fqdn],
-  }
-
-  collector { $::fqdn:
-    ensure   => present,
-    osfam    => $::osfamily,
-    account  => $logicmonitor::account,
-    user     => $logicmonitor::user,
-    password => $logicmonitor::password,
-  }
-
-  collector_installer {$::fqdn:
-    ensure       => present,
-    install_dir  => $install_dir,
-    architecture => $::architecture,
-    account      => $logicmonitor::account,
-    user         => $logicmonitor::user,
-    password     => $logicmonitor::password,
-    require      => Collector[$::fqdn],
-  }
-
-  service{'logicmonitor-agent':
-    ensure  => running,
-    require => collector_installer[$::fqdn],
-  }
-
-  service{'logicmonitor-watchdog':
-    ensure  => running,
-    require => Collector_installer[$::fqdn],
-  }
+  contain logicmonitor::install
+  contain logicmonitor::service
 }

@@ -71,11 +71,17 @@ class logicmonitor::device(
   $groups           = [],
   $properties       = {},
 ) inherits logicmonitor {
+  # Validation
+  validate_string($description)
+  validate_bool($disable_alerting)
+  validate_array($groups)
+  validate_hash($properties)
 
-  @@device{$hostname:
+  # Create Resource
+  @@device { $hostname:
     ensure            => present,
     collector         => $collector,
-    displayname       => $display_name,
+    display_name      => $display_name,
     description       => $description,
     disable_alerting  => $disable_alerting,
     groups            => $groups,

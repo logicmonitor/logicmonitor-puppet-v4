@@ -25,17 +25,21 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-class logicmonitor::master inherits logicmonitor {
+class logicmonitor::master (
+  $account    = $logicmonitor::account,
+  $user       = $logicmonitor::user,
+  $password   = $logicmonitor::password,
+)inherits logicmonitor {
 
   Device_group <<| |>> {
-    account  => $logicmonitor::account,
-    user     => $logicmonitor::user,
-    password => $logicmonitor::password,
+    account  => $account,
+    user     => $user,
+    password => $password,
   }
 
   Device <<| |>> {
-    account  => $logicmonitor::account,
-    user     => $logicmonitor::user,
-    password => $logicmonitor::password,
+    account  => $account,
+    user     => $user,
+    password => $password,
   }
 }
