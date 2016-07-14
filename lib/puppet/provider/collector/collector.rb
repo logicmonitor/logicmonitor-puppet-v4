@@ -9,7 +9,6 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
 Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::Logicmonitor) do
@@ -37,8 +36,8 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
                      build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collector, true)
       debug "Found Collector: #{collector}"
-      delete_collector = JSON.parse(rest("setting/collectors/#{collector['data']['items'][0]['id']}",
-                                         Puppet::Provider::Logicmonitor::HTTP_DELETE))
+      delete_collector = rest("setting/collectors/#{collector['data']['items'][0]['id']}",
+                              Puppet::Provider::Logicmonitor::HTTP_DELETE)
       valid_api_response?(delete_collector, false, true) ? debug(delete_collector.to_s) : alert(delete_collector.to_s)
     else
       alert collector.to_s

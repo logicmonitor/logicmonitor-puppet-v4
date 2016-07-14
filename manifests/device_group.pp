@@ -24,9 +24,9 @@ class logicmonitor::device_group (
 
   # Create Resource
   @@device_group { $full_path:
-    ensure            => present,
-    description       => $description,
-    disable_alerting  => $disable_alerting,
-    properties        => $properties,
+    ensure           => present,
+    description      => $description,
+    disable_alerting => $disable_alerting,
+    properties       => $properties,
   }
 }

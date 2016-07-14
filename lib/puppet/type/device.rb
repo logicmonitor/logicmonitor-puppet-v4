@@ -9,6 +9,12 @@
 #    Or "hostname" 
 #    Sets the path of the group. Path must start with a "/"
 #
+# [*display_name*]
+#    The LogicMonitor display name of the device
+#
+# [*collector*]
+#    The LogicMonitor collector description
+#
 # [*description*]
 #    Set the description shown in the LogicMonitor portal
 #
@@ -19,17 +25,29 @@
 # [*disable_alerting*]
 #    Boolean value setting whether to deliver alerts on devices within this group.
 #
-# [*mode*]
-#    Set the puppet management mode.
-#    purge -
+# [*groups*]
+#    Must be an Array object of group full path strings.
 #
-# [*opsnote*]
-#    Boolean value setting whether to insert an OpsNote into your LogicMonitor account
-#    when Puppet changes the device.
+# [*account*]
+#   LogicMonitor account. Required for API access.
+#
+# [*user*]
+#   LogicMonitor user name. Required for API access.
+#
+# [*password*]
+#   LogicMonitor password. Required for API access.
 #
 #
 # === Examples
 #
+# class { 'logicmonitor::device' :
+#     hostname 			  => "192.168.0.1",
+#     display_name		=> "node1",
+#     description			=> "Sample LM Device",
+#     properties			=> {"propertyname" => "value", "propertyvalue2" => "value2"},
+#     groups				  => ["puppet"],
+#     disable_alerting	=> false,
+# }
 #
 # === Authors
 #

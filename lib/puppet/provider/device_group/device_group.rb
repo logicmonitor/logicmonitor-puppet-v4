@@ -8,8 +8,10 @@
 #
 # Copyright 2016 LogicMonitor, Inc
 #
-require 'json'
-require 'open-uri'
+require 'openssl'
+require 'net/http'
+require 'net/https'
+
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
 Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provider::Logicmonitor) do

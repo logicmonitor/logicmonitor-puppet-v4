@@ -9,8 +9,10 @@
 # Copyright 2016 LogicMonitor, Inc
 #
 
-require 'json'
-require 'open-uri'
+require 'openssl'
+require 'net/http'
+require 'net/https'
+
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
 Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmonitor) do
@@ -255,7 +257,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                                   'name,value'))
       if valid_api_response?(device_properties, true)
         device_properties['data']['items'].each do |property|
-          name = property['name']
+          name = property['name'].downcase
           value = property['value']
           if value.include?('********') && resource[:properties].has_key?(name)
             debug 'Found password property. Verifying'
@@ -270,7 +272,12 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
               debug 'Property changed'
             end
           end
-          properties[name] = value
+          unless name == 'system.categories' || name == 'puppet.update.on'
+            if (name == 'snmp.version' && resource[:properties]['snmp.version']) ||
+                name != 'snmp.version'
+              properties[name] = value
+            end
+          end
         end
       else
         alert device_properties

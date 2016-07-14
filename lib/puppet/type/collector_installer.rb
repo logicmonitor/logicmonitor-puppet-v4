@@ -30,10 +30,7 @@
 #
 # === Examples
 #
-# Implict use (preferred)
-# node{"foobar":
 #   include logicmonitor::collector
-# }
 #
 # === Authors
 #

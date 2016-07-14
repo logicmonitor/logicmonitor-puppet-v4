@@ -79,12 +79,12 @@ class logicmonitor::device(
 
   # Create Resource
   @@device { $hostname:
-    ensure            => present,
-    collector         => $collector,
-    display_name      => $display_name,
-    description       => $description,
-    disable_alerting  => $disable_alerting,
-    groups            => $groups,
-    properties        => $properties,
+    ensure           => present,
+    collector        => $collector,
+    display_name     => $display_name,
+    description      => $description,
+    disable_alerting => $disable_alerting,
+    groups           => $groups,
+    properties       => $properties,
   }
 }

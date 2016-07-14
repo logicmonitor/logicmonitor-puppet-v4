@@ -53,13 +53,19 @@ Upcoming features:
 
 ## Requirements
 
-** Ruby (1.9.3) and Puppet 4.X **
+** Ruby (1.9.3, 2.0.X, 2.1.X) and Puppet 4.X **
 
 This is a module written for Puppet 4
 
 ** Ruby Gems  JSON Gem **
 
-This module interacts with LogicMonitor's API which is JSON based. JSON gem needed to parse responses from the servers
+This module interacts with LogicMonitor's API which is JSON based. 
+The JSON gem needed to parse responses from the LogicMonitor API. 
+Our Gemfile enforces json ruby gem version 1.7.7, which may be installed 
+via
+```
+$ bundle install
+```
 
 ** storeconfigs **
 

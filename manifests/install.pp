@@ -36,7 +36,7 @@ class logicmonitor::install(
   collector_installer {$::fqdn:
     ensure       => present,
     install_dir  => $install_dir,
-    architecture => $architecture,
+    architecture => $::architecture,
     account      => $logicmonitor::account,
     user         => $logicmonitor::user,
     password     => $logicmonitor::password,

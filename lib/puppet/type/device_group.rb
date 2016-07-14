@@ -20,18 +20,23 @@
 #    Boolean value setting whether to deliver alerts on devices within this group.
 #    Overrides device level alert enable setting
 #
+# [*account*]
+#   LogicMonitor account. Required for API access.
+#
+# [*user*]
+#   LogicMonitor user name. Required for API access.
+#
+# [*password*]
+#   LogicMonitor password. Required for API access.
+#
+#
 # === Examples
 #
-# device_group { "/puppet":
-#   properties => {"mysql.port"=>1234, "snmp.community"=>"puppetlabs" },
-#     description => 'This is the top level puppet managed device group',
-# }
-#
-# device_group {"/puppetlabs":}
-#
-# device_group { "/puppetlabs/puppet":
-#   alertenable => false,
-#   description => "A very useful description",
+# class { 'logicmonitor::device_group' :
+#     full_path           => "puppet",
+#     description         => "group description",
+#     disable_alerting    => true,
+#     properties          => {"testproperty" => "value"},
 # }
 #
 # === Authors
