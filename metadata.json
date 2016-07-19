@@ -7,7 +7,24 @@
   "source": "https://github.com/logicmonitor/logicmonitor-puppet-v4",
   "project_page": "https://forge.puppet.com/logicmonitor/logicmonitor",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
-  "tags": ["logicmonitor", "monitoring", "infrastructure", "device", "devices", "collector"],
+  "tags": [
+    "logicmonitor",
+    "logic",
+    "monitor",
+    "server",
+    "snmp",
+    "bandwidth",
+    "traffic",
+    "ping",
+    "network",
+    "performance",
+    "tool",
+    "monitoring",
+    "infrastructure",
+    "device",
+    "devices",
+    "collector"
+  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
