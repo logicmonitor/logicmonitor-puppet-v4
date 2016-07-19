@@ -51,7 +51,7 @@ Puppet::Type.newtype(:collector) do
 
   newparam(:osfam) do
     desc 'The operating system of the system to run a collector. Supported Distros: Debian, Redhat, and Amazon. Coming soon: Windows '
-    valid_list = ['redhat', 'debian', 'amazon']
+    valid_list = ['redhat', 'centos', 'debian', 'ubuntu', 'amazon']
     validate do |value|
       unless valid_list.include?(value.downcase)
         raise ArgumentError, '%s is not a valid distribution for a collector. Please install on a Debian, Redhat, or Amazon operating system' % value
