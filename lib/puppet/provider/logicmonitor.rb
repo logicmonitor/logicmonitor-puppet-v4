@@ -53,11 +53,6 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     else
       uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest/#{endpoint}")
     end
-    debug 'Created URI Object: %s' % uri.request_uri
-    debug 'HTTP Method: %s' % http_method
-    debug 'Query Parameters: %s' % query_params.to_s
-    debug 'Data: %s' % data.to_s
-    debug '-----------------------'
 
     if download_collector
       auth_query_params = {'c' => resource[:account], 'u' => resource[:user], 'p' => resource[:password]}
@@ -109,9 +104,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     if download_collector
       http.request(request).body
     else
-      resp = http.request(request).body
-      debug 'Response: %s' % resp
-      JSON.parse(resp)
+      JSON.parse(http.request(request).body)
     end
   end
 

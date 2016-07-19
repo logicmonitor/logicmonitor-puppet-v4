@@ -16,19 +16,20 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
 
   # Creates a Collector
   def create
+    start = Time.now
     debug "Creating Collector \"#{resource[:description]}\""
     create_collector = rest(nil,
                             Puppet::Provider::Logicmonitor::COLLECTORS_ENDPOINT,
                             Puppet::Provider::Logicmonitor::HTTP_POST,
                             nil,
                             build_collector_json(resource[:description]))
-    debug('Created Collector')
-    valid_api_response?(create_collector) ? debug(create_collector.to_s) : alert(create_collector.to_s)
-    debug('Checked Response')
+    alert(create_collector) unless valid_api_response?(create_collector)
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Deletes a Collector
   def destroy
+    start = Time.now
     debug "Deleting Collector \"#{resource[:description]}\""
     collector = rest(nil,
                      Puppet::Provider::Logicmonitor::COLLECTORS_ENDPOINT,
@@ -36,9 +37,11 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
                      build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collector, true)
       debug "Found Collector: #{collector}"
-      delete_collector = rest("setting/collectors/#{collector['data']['items'][0]['id']}",
+      delete_collector = rest(nil,
+                              Puppet::Provider::Logicmonitor::COLLECTOR_ENDPOINT % collector['data']['items'][0]['id'],
                               Puppet::Provider::Logicmonitor::HTTP_DELETE)
-      valid_api_response?(delete_collector, false, true) ? debug(delete_collector.to_s) : alert(delete_collector.to_s)
+      alert(delete_collector) unless valid_api_response?(delete_collector, false, true)
+      debug "Finished in #{(Time.now-start)*1000.0} ms"
     else
       alert collector.to_s
     end
@@ -46,16 +49,17 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
 
   # Checks if Collector exists
   def exists?
+    start = Time.now
     debug "Checking if Collector exists with description \"#{resource[:description]}\""
     collectors = rest(nil,
                       Puppet::Provider::Logicmonitor::COLLECTORS_ENDPOINT,
                       Puppet::Provider::Logicmonitor::HTTP_GET,
                       build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collectors, true)
-      debug 'Found Collector: %s' % collectors.to_s
+      debug "Finished in #{(Time.now-start)*1000.0} ms"
       return true
     end
-    debug 'No Collector found for %s' % resource[:description]
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     false
   end
 

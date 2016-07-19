@@ -42,6 +42,7 @@
 #
 # class { 'logicmonitor::device' :
 #     hostname 			  => "192.168.0.1",
+#     collector       => "collectordescription",
 #     display_name		=> "node1",
 #     description			=> "Sample LM Device",
 #     properties			=> {"propertyname" => "value", "propertyvalue2" => "value2"},

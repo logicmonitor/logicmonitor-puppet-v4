@@ -8,8 +8,18 @@ describe 'logicmonitor::service', :type => :class do
           :watchdog_service => 'logicmonitor-watchdog',
       }
     }
-    it { is_expected.to contain_service('logicmonitor-agent') }
-    it { is_expected.to contain_service('logicmonitor-watchdog') }
+    it { is_expected.to contain_service('logicmonitor-agent').with({
+        'ensure'  => 'running',
+        'hasstatus' => 'true',
+        'hasrestart'=> 'true',
+      })
+    }
+    it { is_expected.to contain_service('logicmonitor-watchdog').with({
+        'ensure'  => 'running',
+        'hasstatus' => 'true',
+        'hasrestart'=> 'true',
+      })
+    }
     it { is_expected.to have_resource_count(2) }
   end
 end

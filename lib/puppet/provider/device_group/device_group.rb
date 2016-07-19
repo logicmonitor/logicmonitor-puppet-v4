@@ -46,6 +46,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
 
   # Creates a Device Group based on parameters
   def create
+    start = Time.now
     debug "Creating device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
     recursive_group_create(connection,
@@ -53,10 +54,12 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                            resource[:description],
                            resource[:properties],
                            resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Deletes a Device Group
   def destroy
+    start = Time.now
     debug("Deleting device group: \"#{resource[:full_path]}\"")
     connection = self.class.get_connection(resource[:account])
     device_group = get_device_group(connection, resource[:full_path], 'id')
@@ -66,10 +69,12 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                                  Puppet::Provider::Logicmonitor::HTTP_DELETE)
       valid_api_response?(delete_device_group) ? nil : alert(delete_device_group)
     end
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Verifies the existence of a device group
   def exists?
+    start = Time.now
     debug "Checking if device group \"#{resource[:full_path]}\" exists"
     connection = self.class.get_connection(resource[:account])
     if resource[:full_path].eql?('/')
@@ -77,19 +82,24 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     else
       device_group = get_device_group(connection, resource[:full_path])
       debug device_group unless nil_or_empty?(device_group)
+      debug "Finished in #{(Time.now-start)*1000.0} ms"
       nil_or_empty?(device_group) ? false : true
     end
   end
 
   # Retrieve Device Group Description
   def description
+    start = Time.now
     debug "Checking description for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
-    get_device_group(connection, resource[:full_path],'description')['description']
+    device_group = get_device_group(connection, resource[:full_path],'description')
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    device_group['description']
   end
 
   # Update Device Group Description
   def description=(value)
+    start = Time.now
     debug "Updating description on device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
     update_device_group(connection,
@@ -97,17 +107,22 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         value,
                         resource[:properties],
                         resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Get disable_alerting status of Device Group
   def disable_alerting
+    start = Time.now
     debug "Checking disable_alerting setting for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
-    get_device_group(connection, resource[:full_path],'disableAlerting')['disableAlerting'].to_s
+    device_group = get_device_group(connection, resource[:full_path],'disableAlerting')
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    device_group['disableAlerting'].to_s
   end
 
   # Update disable_alerting status of Device Group
   def disable_alerting=(value)
+    start = Time.now
     debug "Updating disable_alerting setting for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
     update_device_group(connection,
@@ -115,10 +130,12 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         resource[:description],
                         resource[:properties],
                         value)
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Retrieve Properties for device group (including password properties)
   def properties
+    start = Time.now
     debug "Checking properties for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
     properties = Hash.new
@@ -154,11 +171,13 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     else
       alert device_group
     end
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     properties
   end
 
   # Update properties for a Device Group
   def properties=(value)
+    start = Time.now
     debug "Updating properties for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
     update_device_group(connection,
@@ -166,6 +185,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         resource[:description],
                         value,
                         resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Helper method for updating a Device Group via HTTP PATCH

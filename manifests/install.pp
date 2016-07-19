@@ -7,6 +7,7 @@
 #
 # === Authors
 #
+# Sam Dacanay <sam.dacanay@logicmonitor.com>
 # Ethan Culler-Mayeno <ethan.culler-mayeno@logicmonitor.com>
 #
 # === Copyright

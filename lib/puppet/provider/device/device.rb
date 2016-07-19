@@ -48,6 +48,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
 
   # Creates a Device for the specified resource
   def create
+    start = Time.now
     debug "Creating device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     resource[:groups].each do |group|
@@ -68,49 +69,56 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                                  resource[:groups],
                                                  resource[:properties],
                                                  resource[:disable_alerting]).to_json)
-    valid_api_response?(add_device_response) ? debug('Successfully Created Device') : alert(add_device_response)
+    alert(add_device_response) unless valid_api_response?(add_device_response)
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Delete a Device Record for the specified resource
   # API used: Rest
   def destroy
+    start = Time.now
     debug "Removing device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     device = get_device_by_display_name(connection, resource[:display_name], 'id') ||
-             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'id')
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector])
     if device
       delete_device_response = rest(connection,
                                     Puppet::Provider::Logicmonitor::DEVICE_ENDPOINT % device['id'],
                                     Puppet::Provider::Logicmonitor::HTTP_DELETE)
       alert(delete_device_response) unless valid_api_response?(delete_device_response)
     end
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Checks if a Device exists in the LogicMonitor Account
   def exists?
+    start = Time.now
     debug "Checking for device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     device = get_device_by_display_name(connection, resource[:display_name], 'id') ||
-             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'id')
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector])
     if nil_or_empty?(device)
-      debug 'Device does not exist'
+      debug "Finished in #{(Time.now-start)*1000.0} ms"
       return false
     end
-    debug 'Device exists'
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     true
   end
 
   # Retrieves display_name
   def display_name
+    start = Time.now
     debug "Checking display_name for device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     device = get_device_by_display_name(connection, resource[:display_name], 'displayName') ||
-             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'displayName')
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     device ? device['displayName'] : nil
   end
 
   # Updates display_name
   def display_name=(value)
+    start = Time.now
     debug "Updating display_name on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     update_device(connection,
@@ -121,19 +129,23 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                   resource[:groups],
                   resource[:properties],
                   resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Retrieves Description 
   def description
+    start = Time.now
     debug "Checking description for device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     device = get_device_by_display_name(connection, resource[:display_name], 'description') ||
-             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'description')
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     device ? device['description'] : nil
   end
 
   # Updates Description 
   def description=(value)
+    start = Time.now
     debug "Updating description on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     update_device(connection,
@@ -144,18 +156,22 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                   resource[:groups],
                   resource[:properties],
                   resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Retrieves Collector 
   def collector
+    start = Time.now
     debug "Checking collector for device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     agent = get_agent_by_description(connection, resource[:collector], 'description')
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     agent ? agent['description'] : nil
   end
 
   # Updates Collector 
   def collector=(value)
+    start = Time.now
     debug "Updating collector on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     update_device(connection,
@@ -166,19 +182,23 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                   resource[:groups],
                   resource[:properties],
                   resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Retrieves disable_alerting setting
   def disable_alerting
+    start = Time.now
     debug "Checking disable_alerting setting on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     device = get_device_by_display_name(connection, resource[:display_name], 'disableAlerting') ||
-             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'disableAlerting')
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     device ? device['disableAlerting'].to_s : nil
   end
 
   # Updates disable_alerting setting
   def disable_alerting=(value)
+    start = Time.now
     debug "Updating disable_alerting setting on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     update_device(connection,
@@ -189,16 +209,18 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                   resource[:groups],
                   resource[:properties],
                   value)
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Retrieves Group Membership information
   # Note: Device Groups may only be managed by this module if they are NOT dynamic
   def groups
+    start = Time.now
     debug "Checking group memberships for device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     group_list = []
     device = get_device_by_display_name(connection, resource[:display_name], 'hostGroupIds') ||
-             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'hostGroupIds')
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector])
     if device
       device_group_ids = device['hostGroupIds'].split(',')
       device_group_filters = Array.new
@@ -222,11 +244,13 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     else
       alert 'Unable to get Device'
     end
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     group_list
   end
 
   # Update Group Membership information
   def groups=(value)
+    start = Time.now
     debug "Updating the set of group memberships on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     value.each do |group|
@@ -240,15 +264,17 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                   value,
                   resource[:properties],
                   resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Retrieve Device Properties
   def properties
+    start = Time.now
     debug "Checking properties for device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     properties = Hash.new
     device = get_device_by_display_name(connection, resource[:display_name], 'id') ||
-             get_device_by_hostname(connection, resource[:hostname], resource[:collector], 'id')
+             get_device_by_hostname(connection, resource[:hostname], resource[:collector])
     if device
       device_properties = rest(connection,
                                Puppet::Provider::Logicmonitor::DEVICE_PROPERTIES_ENDPOINT % device['id'],
@@ -285,11 +311,13 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     else
       alert device
     end
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
     properties
   end
 
   # Update Device Properties
   def properties=(value)
+    start = Time.now
     debug "Updating properties on device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     update_device(connection,
@@ -300,12 +328,13 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                   resource[:groups],
                   value,
                   resource[:disable_alerting])
+    debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
   # Helper method to simplify updating a device logic
   def update_device(connection, hostname, display_name, collector, description, groups, properties, disable_alerting)
     device = get_device_by_display_name(connection, display_name, 'id,scanConfigId,netflowCollectorId') ||
-             get_device_by_hostname(connection, hostname, collector, 'id,scanConfigId,netflowCollectorId')
+             get_device_by_hostname(connection, hostname, collector)
     update_device_hash = build_device_json(connection,
                                            hostname,
                                            display_name,
@@ -365,14 +394,14 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
   end
 
   # Retrieve device (fields) by it's hostname & collector description (unique)
-  def get_device_by_hostname(connection, hostname, collector, fields=nil)
-    device_filters = ["hostName:#{hostname}"]
+  def get_device_by_hostname(connection, hostname, collector)
+    device_filters = ["name:#{hostname}"]
     device_filters << "collectorDescription:#{collector}"
 
     device_json = rest(connection,
                        Puppet::Provider::Logicmonitor::DEVICES_ENDPOINT,
                        Puppet::Provider::Logicmonitor::HTTP_GET,
-                       build_query_params(device_filters.join(','), fields, 1))
+                       build_query_params(device_filters.join(','), nil, 1))
     valid_api_response?(device_json, true) ? device_json['data']['items'][0] : nil
   end
 end
