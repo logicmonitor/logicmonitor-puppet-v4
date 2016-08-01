@@ -27,18 +27,22 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   HTTP_DELETE = 'DELETE'
 
   # Device API endpoints
-  DEVICE_ENDPOINT = 'device/devices/%d'
-  DEVICES_ENDPOINT = 'device/devices'
-  DEVICE_PROPERTIES_ENDPOINT = 'device/devices/%d/properties'
+  DEVICE_ENDPOINT = '/device/devices/%d'
+  DEVICES_ENDPOINT = '/device/devices'
+  DEVICE_PROPERTIES_ENDPOINT = '/device/devices/%d/properties'
 
   # Device Group API endpoints
-  DEVICE_GROUP_ENDPOINT = 'device/groups/%d'
-  DEVICE_GROUPS_ENDPOINT = 'device/groups'
-  DEVICE_GROUP_PROPERTIES_ENDPOINT = 'device/groups/%d/properties'
+  DEVICE_GROUP_ENDPOINT = '/device/groups/%d'
+  DEVICE_GROUPS_ENDPOINT = '/device/groups'
+  DEVICE_GROUP_PROPERTIES_ENDPOINT = '/device/groups/%d/properties'
 
   # Collector API endpoints
-  COLLECTOR_ENDPOINT = 'setting/collectors/%d'
-  COLLECTORS_ENDPOINT = 'setting/collectors'
+  COLLECTOR_ENDPOINT = '/setting/collectors/%d'
+  COLLECTORS_ENDPOINT = '/setting/collectors'
+
+  # Authentication Constants
+  BASIC = 0
+  TOKEN = 1
 
   # Execute a RESTful request to LogicMonitor
   # endpoint: RESTful endpoint to request
@@ -47,12 +51,17 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # data: JSON data to send in HTTP POST RESTful requests
   # download_collector: If we are executing a download the URL will be santaba/do instead of santaba/rest
   def rest(connection, endpoint, http_method, query_params={}, data=nil, download_collector=false)
+    # Sanity Check on Endpoint
+    endpoint.prepend('/') unless endpoint.start_with?'/'
+
     # Build URI and add query Parameters
     if download_collector
       uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/do/logicmonitorsetup")
     else
-      uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest/#{endpoint}")
+      uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest#{endpoint}")
     end
+
+    auth = check_auth
 
     if download_collector
       auth_query_params = {'c' => resource[:account], 'u' => resource[:user], 'p' => resource[:password]}
@@ -72,14 +81,17 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
       raise ArgumentError, 'Invalid data for HTTP POST request' if nil_or_empty? data
       request = Net::HTTP::Post.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
+      request['Content-Type'] = 'application/json'
     elsif http_method.upcase == HTTP_PUT
       raise ArgumentError, 'Invalid data for HTTP PUT request' if nil_or_empty? data
       request = Net::HTTP::Put.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
+      request['Content-Type'] = 'application/json'
     elsif http_method.upcase == HTTP_PATCH
       raise ArgumentError, 'Invalid data for HTTP PATCH request' if nil_or_empty? data
       request = Net::HTTP::Patch.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
+      request['Content-Type'] = 'application/json'
     elsif http_method.upcase == HTTP_GET
       request = Net::HTTP::Get.new uri.request_uri
     elsif http_method.upcase == HTTP_DELETE
@@ -89,7 +101,13 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     end
 
     # Add Authentication Information to Request (downloads still require CUP authentication)
-    request.basic_auth resource[:user], resource[:password] unless download_collector
+    unless download_collector
+      if auth == BASIC
+        request.basic_auth resource[:user], resource[:password] unless download_collector
+      elsif auth == TOKEN
+        request['Authorization'] == generate_token(endpoint, http_method, data)
+      end
+    end
 
     # Execute Request and Return Response
     if connection.nil?
@@ -106,6 +124,28 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     else
       JSON.parse(http.request(request).body)
     end
+  end
+
+  # Checks which form of authentication to perform for HTTP Request
+  def check_auth
+    if nil_or_empty?(resource[:account])
+      raise ArgumentError, 'Account missing, may not be nil or empty'
+    else
+      if nil_or_empty?(resource[:access_id]) || nil_or_empty?(resource[:access_key])
+        if check_basic_auth
+          raise ArgumentError, 'Not enough information for Authentication. '\
+          'Need either API Token Access ID & Key OR Username and Password'
+        else
+          return BASIC
+        end
+      else
+        return TOKEN
+      end
+    end
+  end
+
+  def check_basic_auth
+    nil_or_empty?(resource[:user]) || nil_or_empty?(resource[:password])
   end
 
   # Builds a Hash containing LogicMonitor-supported RESTful query parameters
@@ -137,10 +177,12 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   end
 
   # Helper method to generate a LMv1 API Token
-  def generate_token(endpoint, http_method, data)
+  def generate_token(endpoint, http_method, data='')
     timestamp = DateTime.now.strftime('%Q')
     unsigned_data = "#{http_method.upcase}#{timestamp}#{data.to_s}#{endpoint}"
-    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), resource[:access_key], unsigned_data)).strip
+    signature = Base64.strict_encode64(
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), resource[:access_key], unsigned_data)
+    ).strip
     "LMv1 #{resource[:access_id]}:#{signature}:#{timestamp}"
   end
 

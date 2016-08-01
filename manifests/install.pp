@@ -27,11 +27,13 @@ class logicmonitor::install(
   }
 
   collector { $::fqdn:
-    ensure   => present,
-    osfam    => $::osfamily,
-    account  => $logicmonitor::account,
-    user     => $logicmonitor::user,
-    password => $logicmonitor::password,
+    ensure     => present,
+    osfam      => $::osfamily,
+    account    => $logicmonitor::account,
+    access_id  => $logicmonitor::access_id,
+    access_key => $logicmonitor::access_key,
+    user       => $logicmonitor::user,
+    password   => $logicmonitor::password,
   }
 
   collector_installer {$::fqdn:
@@ -39,6 +41,8 @@ class logicmonitor::install(
     install_dir  => $install_dir,
     architecture => $::architecture,
     account      => $logicmonitor::account,
+    access_id    => $logicmonitor::access_id,
+    access_key   => $logicmonitor::access_key,
     user         => $logicmonitor::user,
     password     => $logicmonitor::password,
     require      => Collector[$::fqdn],

@@ -21,6 +21,15 @@
 # [*account*]
 #   LogicMonitor account. Required for API access.
 #
+# NOTE ON AUTHENTICATION: The LogicMonitor puppet module requires user api token access ID and key for authentication to
+# our API. We no longer support Basic Authentication. It is recommended to use Hiera to abstract your API token credentials.
+#
+# [*access_id*]
+#   LogicMonitor user API Token Access ID. Required for API access.
+#
+# [*access_key*]
+#   LogicMonitor user API Token Access Key. Required for API Access.
+#
 # [*user*]
 #   LogicMonitor user name. Required for API access.
 #
@@ -74,21 +83,19 @@ Puppet::Type.newtype(:collector_installer) do
     end
   end
 
+  newparam(:access_id) do
+    desc 'This is a LogicMonitor user\'s API Token Access ID.'
+  end
+
+  newparam(:access_key) do
+    desc 'This is a LogicMonitor user\'s API Token Access Key.'
+  end
+
   newparam(:user) do
     desc 'This is the LogicMonitor username'
-    validate do |value|
-      if value.nil? || value.empty?
-        raise ArgumentError, 'user may not be nil or empty'
-      end
-    end
   end
 
   newparam(:password) do
     desc 'This is the password for the LogicMonitor user specified'
-    validate do |value|
-      if value.nil? || value.empty?
-        raise ArgumentError, 'password may not be nil or empty'
-      end
-    end
   end
 end

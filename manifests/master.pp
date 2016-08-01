@@ -27,19 +27,25 @@
 
 class logicmonitor::master (
   $account    = $logicmonitor::account,
+  $access_id  = $logicmonitor::access_id,
+  $access_key = $logicmonitor::access_key,
   $user       = $logicmonitor::user,
   $password   = $logicmonitor::password,
 )inherits logicmonitor {
 
   Device_group <<| |>> {
-    account  => $account,
-    user     => $user,
-    password => $password,
+    account    => $account,
+    access_id  => $access_id,
+    access_key => $access_key,
+    user       => $user,
+    password   => $password,
   }
 
   Device <<| |>> {
-    account  => $account,
-    user     => $user,
-    password => $password,
+    account    => $account,
+    access_id  => $access_id,
+    access_key => $access_key,
+    user       => $user,
+    password   => $password,
   }
 }

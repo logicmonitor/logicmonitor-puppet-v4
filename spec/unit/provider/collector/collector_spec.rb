@@ -9,6 +9,8 @@ describe Puppet::Type.type(:collector).provider(:collector) do
         :description => 'UnitTestCollector',
         :osfam       => 'RedHat',
         :account     => 'lmsdacanay',
+        :access_id   => '9Y2AKV2GI8HU56BG924Y',
+        :access_key  => '3bbjV(tu]478Bt-7Q%7(A)Pe32uR2PhN8rj)dR)9',
         :user        => 'puppetadmin',
         :password    => 'marionette',
       }

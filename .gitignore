@@ -1,3 +1,7 @@
 .idea/
 .idea/*
 spec/fixtures/modules/stdlib/
+.vagrant/
+Vagrantfile
+junit/
+log/

@@ -44,11 +44,15 @@
 #
 
 class logicmonitor(
-  $account  = undef,
-  $user     = undef,
-  $password = undef,
+  $account    = undef,
+  $user       = undef,
+  $password   = undef,
+  $access_id  = undef,
+  $access_key = undef,
 ) {
   validate_string($account)
+  validate_string($access_id)
+  validate_string($access_key)
   validate_string($user)
   validate_string($password)
 }

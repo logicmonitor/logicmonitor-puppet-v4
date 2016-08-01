@@ -36,5 +36,4 @@ class logicmonitor::service(
     hasrestart => true,
     require    => Collector_installer[$::fqdn],
   }
-
 }

@@ -4,7 +4,7 @@ collector_installer_type = Puppet::Type.type(:collector_installer)
 
 describe collector_installer_type do
   let :params do
-    [ :description, :install_dir, :architecture, :account, :user, :password ]
+    [ :description, :install_dir, :architecture, :account, :access_id, :access_key, :user, :password ]
   end
 
   it 'should have the expected parameters' do
