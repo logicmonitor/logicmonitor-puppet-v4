@@ -81,21 +81,18 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
       raise ArgumentError, 'Invalid data for HTTP POST request' if nil_or_empty? data
       request = Net::HTTP::Post.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
-      request['Content-Type'] = 'application/json'
     elsif http_method.upcase == HTTP_PUT
       raise ArgumentError, 'Invalid data for HTTP PUT request' if nil_or_empty? data
       request = Net::HTTP::Put.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
-      request['Content-Type'] = 'application/json'
     elsif http_method.upcase == HTTP_PATCH
       raise ArgumentError, 'Invalid data for HTTP PATCH request' if nil_or_empty? data
       request = Net::HTTP::Patch.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
-      request['Content-Type'] = 'application/json'
     elsif http_method.upcase == HTTP_GET
-      request = Net::HTTP::Get.new uri.request_uri
+      request = Net::HTTP::Get.new uri.request_uri, {'Accept' => 'application/json'}
     elsif http_method.upcase == HTTP_DELETE
-      request = Net::HTTP::Delete.new uri.request_uri
+      request = Net::HTTP::Delete.new uri.request_uri, {'Accept' => 'application/json'}
     else
       debug("Error: Invalid HTTP Method: #{http_method}")
     end
@@ -105,7 +102,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
       if auth == BASIC
         request.basic_auth resource[:user], resource[:password] unless download_collector
       elsif auth == TOKEN
-        request['Authorization'] == generate_token(endpoint, http_method, data)
+        request['Authorization'] = generate_token(endpoint, http_method, data)
       end
     end
 
@@ -122,7 +119,13 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     if download_collector
       http.request(request).body
     else
-      JSON.parse(http.request(request).body)
+      response = http.request(request)
+      begin
+        JSON.parse(response.body)
+      rescue JSON::ParserError => e
+        alert e.message
+        raise e
+      end
     end
   end
 
