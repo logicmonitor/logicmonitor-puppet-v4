@@ -32,8 +32,6 @@ class logicmonitor::install(
     account    => $logicmonitor::account,
     access_id  => $logicmonitor::access_id,
     access_key => $logicmonitor::access_key,
-    user       => $logicmonitor::user,
-    password   => $logicmonitor::password,
   }
 
   collector_installer {$::fqdn:
@@ -43,8 +41,6 @@ class logicmonitor::install(
     account      => $logicmonitor::account,
     access_id    => $logicmonitor::access_id,
     access_key   => $logicmonitor::access_key,
-    user         => $logicmonitor::user,
-    password     => $logicmonitor::password,
     require      => Collector[$::fqdn],
   }
 }

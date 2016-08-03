@@ -4,7 +4,7 @@ device_group_type = Puppet::Type.type(:device_group)
 
 describe device_group_type do
   let :params do
-    [ :full_path, :account, :access_id, :access_key, :user, :password ]
+    [ :full_path, :account, :access_id, :access_key ]
   end
 
   let :properties do

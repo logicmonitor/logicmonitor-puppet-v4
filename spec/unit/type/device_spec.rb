@@ -4,7 +4,7 @@ device_type = Puppet::Type.type(:device)
 
 describe device_type do
   let :params do
-    [ :hostname, :account, :access_id, :access_key, :user, :password ]
+    [ :hostname, :account, :access_id, :access_key ]
   end
 
   let :properties do

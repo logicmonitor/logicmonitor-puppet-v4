@@ -22,14 +22,18 @@ Puppet::Type.type(:collector_installer).provide(:collector_installer, :parent =>
     if collector
       if resource[:architecture].include?('64')
         installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{collector['id']}_64.bin"
-        arch = 64
+        arch = Puppet::Provider::Logicmonitor::LINUX_64
       else
         installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{collector['id']}_32.bin"
-        arch = 32
+        arch = Puppet::Provider::Logicmonitor::LINUX_32
       end
       File.open(installation_binary, 'w+') do |file|
-        download_query_params = {'id' => collector['id'], 'arch' => arch.to_s}
-        file.write(rest(nil, '', Puppet::Provider::Logicmonitor::HTTP_GET, download_query_params, nil, true))
+        file.write(rest(nil,
+                        Puppet::Provider::Logicmonitor::COLLECTOR_DOWNLOAD_ENDPOINT % [collector['id'], arch],
+                        Puppet::Provider::Logicmonitor::HTTP_GET,
+                        nil,
+                        nil,
+                        true))
       end
       debug "Download Finished in #{(Time.now - start) * 1000.0} ms"
       install_start = Time.now

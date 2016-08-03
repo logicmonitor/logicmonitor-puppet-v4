@@ -32,12 +32,6 @@
 # [*access_key*]
 #   LogicMonitor user API Token Access Key. Required for API Access.
 #
-# [*user*]
-#   LogicMonitor user name. Required for API access.
-#
-# [*password*]
-#   LogicMonitor password. Required for API access.
-#
 #
 # === Examples
 #
@@ -96,26 +90,16 @@ Puppet::Type.newtype(:device_group) do
 
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
-    validate do |value|
-      if value.nil? || value.empty?
-        raise ArgumentError, 'account may not be nil or empty'
-      end
-    end
+    validate {|value| raise ArgumentError, 'account may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_id) do
     desc 'This is a LogicMonitor user\'s API Token Access ID.'
+    validate {|value| raise ArgumentError, 'access_id may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_key) do
     desc 'This is a LogicMonitor user\'s API Token Access Key.'
-  end
-
-  newparam(:user) do
-    desc 'This is the LogicMonitor username'
-  end
-
-  newparam(:password) do
-    desc 'This is the password for the LogicMonitor user specified'
+    validate {|value| raise ArgumentError, 'access_key may not be nil or empty' if value.nil? || value.empty? }
   end
 end

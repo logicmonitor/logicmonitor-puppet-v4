@@ -20,11 +20,16 @@ require 'date'
 
 class Puppet::Provider::Logicmonitor < Puppet::Provider
 
+  # Supported HTTP Methods
   HTTP_POST = 'POST'
   HTTP_GET = 'GET'
   HTTP_PUT = 'PUT'
   HTTP_PATCH = 'PATCH'
   HTTP_DELETE = 'DELETE'
+
+  # Supported Collector Architectures
+  LINUX_32 = 'linux32'
+  LINUX_64 = 'linux64'
 
   # Device API endpoints
   DEVICE_ENDPOINT = '/device/devices/%d'
@@ -39,10 +44,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # Collector API endpoints
   COLLECTOR_ENDPOINT = '/setting/collectors/%d'
   COLLECTORS_ENDPOINT = '/setting/collectors'
-
-  # Authentication Constants
-  BASIC = 0
-  TOKEN = 1
+  COLLECTOR_DOWNLOAD_ENDPOINT = '/setting/collectors/%d/installers/%s'
 
   # Execute a RESTful request to LogicMonitor
   # endpoint: RESTful endpoint to request
@@ -55,25 +57,8 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     endpoint.prepend('/') unless endpoint.start_with?'/'
 
     # Build URI and add query Parameters
-    if download_collector
-      uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/do/logicmonitorsetup")
-    else
-      uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest#{endpoint}")
-    end
-
-    auth = check_auth
-
-    if download_collector
-      auth_query_params = {'c' => resource[:account], 'u' => resource[:user], 'p' => resource[:password]}
-      if nil_or_empty?(query_params)
-        query = auth_query_params
-      else
-        query = query_params.merge auth_query_params
-      end
-      uri.query = URI.encode_www_form query
-    else
-      uri.query = URI.encode_www_form query_params unless nil_or_empty?(query_params)
-    end
+    uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest#{endpoint}")
+    uri.query = URI.encode_www_form query_params unless nil_or_empty?(query_params)
 
     # Build Request Object
     request = nil
@@ -97,14 +82,8 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
       debug("Error: Invalid HTTP Method: #{http_method}")
     end
 
-    # Add Authentication Information to Request (downloads still require CUP authentication)
-    unless download_collector
-      if auth == BASIC
-        request.basic_auth resource[:user], resource[:password] unless download_collector
-      elsif auth == TOKEN
-        request['Authorization'] = generate_token(endpoint, http_method, data)
-      end
-    end
+    # Add Authentication Information to Request
+    request['Authorization'] = generate_token(endpoint, http_method, data)
 
     # Execute Request and Return Response
     if connection.nil?
@@ -115,41 +94,9 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     else
       http = connection
     end
-
-    if download_collector
-      http.request(request).body
-    else
-      response = http.request(request)
-      begin
-        JSON.parse(response.body)
-      rescue JSON::ParserError => e
-        alert e.message
-        raise e
-      end
-    end
+    download_collector ? http.request(request).body : JSON.parse(http.request(request).body)
   end
 
-  # Checks which form of authentication to perform for HTTP Request
-  def check_auth
-    if nil_or_empty?(resource[:account])
-      raise ArgumentError, 'Account missing, may not be nil or empty'
-    else
-      if nil_or_empty?(resource[:access_id]) || nil_or_empty?(resource[:access_key])
-        if check_basic_auth
-          raise ArgumentError, 'Not enough information for Authentication. '\
-          'Need either API Token Access ID & Key OR Username and Password'
-        else
-          return BASIC
-        end
-      else
-        return TOKEN
-      end
-    end
-  end
-
-  def check_basic_auth
-    nil_or_empty?(resource[:user]) || nil_or_empty?(resource[:password])
-  end
 
   # Builds a Hash containing LogicMonitor-supported RESTful query parameters
   # filter: Filters the response according to the operator and value specified. Example: 'id>4'

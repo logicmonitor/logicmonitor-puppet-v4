@@ -4,7 +4,7 @@ collector_type = Puppet::Type.type(:collector)
 
 describe collector_type do
   let :params do
-    [ :description, :osfam, :account, :access_id, :access_key, :user, :password ]
+    [ :description, :osfam, :account, :access_id, :access_key ]
   end
 
   it 'should have the expected parameters' do
