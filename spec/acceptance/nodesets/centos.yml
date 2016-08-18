@@ -1,0 +1,28 @@
+HOSTS:
+  centos-511-x64:
+    roles:
+      - master
+      - agent
+    platform: centos-511-x86_64
+    box: puppetlabs/centos-5.11-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-5.11-64-puppet
+    hypervisor: vagrant
+  centos-66-x64:
+    roles:
+      - master
+      - agent
+    platform: centos-66-x86_64
+    box: puppetlabs/centos-6.6-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-puppet
+    hypervisor: vagrant
+  centos-70-x64:
+    roles:
+      - master
+      - agent
+    platform: centos-70-x86_64
+    box: puppetlabs/centos-7.0-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-puppet
+    hypervisor: vagrant
+CONFIG:
+  nfs_server: none
+  consoleport: 443

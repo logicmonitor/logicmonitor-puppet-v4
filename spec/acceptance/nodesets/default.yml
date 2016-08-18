@@ -1,0 +1,68 @@
+HOSTS:
+  debian-82-x64:
+    roles:
+      - master
+      - agent
+    platform: debian-82-x86_64
+    box: puppetlabs/debian-8.2-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/debian-8.2-64-puppet
+    hypervisor: vagrant
+  debian-78-i386:
+    roles:
+      - master
+      - agent
+    platform: debian-78-i386
+    box: puppetlabs/debian-7.8-32-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/debian-7.8-32-puppet
+    hypervisor: vagrant
+  ubuntu-1204-x64:
+    roles:
+      - master
+      - agent
+    platform: ubuntu-1204-x86_64
+    box: puppetlabs/ubuntu-12.04-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-puppet
+    hypervisor: vagrant
+  ubuntu-1404-x64:
+    roles:
+      - master
+      - agent
+    platform: ubuntu-1404-x86_64
+    box: puppetlabs/ubuntu-14.04-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-14.04-64-puppet
+    hypervisor: vagrant
+  ubuntu-1604-x64:
+    roles:
+      - master
+      - agent
+    platform: ubuntu-1604-x86_64
+    box: puppetlabs/ubuntu-16.04-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-16.04-64-puppet
+    hypervisor: vagrant
+  centos-511-x64:
+    roles:
+      - master
+      - agent
+    platform: centos-511-x86_64
+    box: puppetlabs/centos-5.11-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-5.11-64-puppet
+    hypervisor: vagrant
+  centos-66-x64:
+    roles:
+      - master
+      - agent
+    platform: centos-66-x86_64
+    box: puppetlabs/centos-6.6-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-puppet
+    hypervisor: vagrant
+  centos-70-x64:
+    roles:
+      - master
+      - agent
+    platform: centos-70-x86_64
+    box: puppetlabs/centos-7.0-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-puppet
+    hypervisor: vagrant
+CONFIG:
+  nfs_server: none
+  consoleport: 443

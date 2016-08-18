@@ -1,18 +1,19 @@
 require_relative '../spec_helper_acceptance'
 
-describe 'device group definition' do
-  context 'valid device_group definition' do
+RSpec.describe 'device collector definition' do
+  context 'valid collector definition' do
     manifest = <<-EOM
       class { 'logicmonitor':
-        account  => 'lmsdacanay',
-        user     => 'puppetadmin',
-        password => 'marionette',
+        account    => 'lmsdacanay',
+        access_id  => 'puppetadmin',
+        access_key => 'marionette',
       }
       include 'logicmonitor::master'
       include 'logicmonitor::collector'
     EOM
-
-    apply_manifest(manifest, :catch_failures => true)
-    expect(apply_manifest(manifest, :catch_failures => true).exit_code).to be 0
+    it 'applies the manifest without errors' do
+      apply_manifest(manifest, :catch_failures => true)
+      expect(apply_manifest(manifest, :catch_failures => true).exit_code).to be 0
+    end
   end
 end

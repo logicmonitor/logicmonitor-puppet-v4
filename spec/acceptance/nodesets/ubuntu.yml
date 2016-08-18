@@ -1,0 +1,28 @@
+HOSTS:
+  ubuntu-1204-x64:
+    roles:
+      - master
+      - agent
+    platform: ubuntu-1204-x86_64
+    box: puppetlabs/ubuntu-12.04-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-puppet
+    hypervisor: vagrant
+  ubuntu-1404-x64:
+    roles:
+      - master
+      - agent
+    platform: ubuntu-1404-x86_64
+    box: puppetlabs/ubuntu-14.04-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-14.04-64-puppet
+    hypervisor: vagrant
+  ubuntu-1604-x64:
+    roles:
+      - master
+      - agent
+    platform: ubuntu-1604-x86_64
+    box: puppetlabs/ubuntu-16.04-64-puppet
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-16.04-64-puppet
+    hypervisor: vagrant
+CONFIG:
+  nfs_server: none
+  consoleport: 443

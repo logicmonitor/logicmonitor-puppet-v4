@@ -7,6 +7,14 @@ HOSTS:
     box: puppetlabs/debian-8.2-64-puppet
     box_url: https://atlas.hashicorp.com/puppetlabs/boxes/debian-8.2-64-puppet
     hypervisor: vagrant
+  debian-78-i386:
+      roles:
+        - master
+        - agent
+      platform: debian-78-i386
+      box: puppetlabs/debian-7.8-32-puppet
+      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/debian-7.8-32-puppet
+      hypervisor: vagrant
 CONFIG:
   nfs_server: none
   consoleport: 443
