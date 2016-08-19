@@ -8,9 +8,9 @@ describe Puppet::Type.type(:collector_installer).provider(:collector_installer) 
         :description => 'UnitTestCollector',
         :install_dir => '/usr/local/logicmonitor/',
         :architecture => 'x86_64',
-        :account     => 'lmsdacanay',
-        :access_id   => '9Y2AKV2GI8HU56BG924Y',
-        :access_key  => '3bbjV(tu]478Bt-7Q%7(A)Pe32uR2PhN8rj)dR)9',
+        :account     => 'puppettest',
+        :access_id   => '9K3A362Bv2N9pGbfgA22',
+        :access_key  => '+95[jRp)8{~]+34_Xr5hk5ga47cvAp4!vRv]2b6%',
       }
     )
   end
