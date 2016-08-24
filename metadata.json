@@ -2,7 +2,7 @@
   "name": "logicmonitor-logicmonitor",
   "version": "1.0.0",
   "author": "Samuel Dacanay",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "summary": "A module for managing LogicMonitor devices, device groups, and collectors",
   "source": "https://github.com/logicmonitor/logicmonitor-puppet-v4",
   "project_page": "https://forge.puppet.com/logicmonitor/logicmonitor",
