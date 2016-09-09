@@ -38,15 +38,15 @@ describe Puppet::Type.type(:collector).provider(:collector) do
     end
   end
 
-  # describe 'create' do
-  #   it 'creates a collector record in LogicMonitor' do
-  #     expect(provider.create).to_not raise_error
-  #   end
-  # end
-  #
-  # describe 'destroy' do
-  #   it 'deletes a collector record in LogicMonitor' do
-  #     expect(provider.destroy).to_not raise_error
-  #   end
-  # end
+  describe 'create' do
+    it 'creates a collector record in LogicMonitor' do
+      expect(provider.create).to_not raise_error
+    end
+  end
+
+  describe 'destroy' do
+    it 'deletes a collector record in LogicMonitor' do
+      expect(provider.destroy).to_not raise_error
+    end
+  end
 end
