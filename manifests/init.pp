@@ -9,13 +9,12 @@
 # [*account*]
 #    Sets which portal to manage
 #
-# [*user*]
-#    Username for access to the portal. This user must have sufficient permissions to create/modify devices, device
+# [*access_id*]
+#    Access ID for a user's LMv1 API Token. This user must have sufficient permissions to create/modify devices, device
 #    groups, and collectors.
 #
-# [*password*]
-#    Password for access to the portal. Note that all parameters can be set when the class is declared in your site.pp
-#    (must be declared either globally or on a single node), or in the variables found in logicmonitor::config
+# [*access_key*]
+#    Access Key for a user's LMv1 API Token.
 #
 # === Variables
 #

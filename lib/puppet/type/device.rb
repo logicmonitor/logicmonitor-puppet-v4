@@ -105,7 +105,7 @@ Puppet::Type.newtype(:device) do
   end
 
   newproperty(:groups, :array_matching => :all) do
-    desc 'An array where the entries are fullpaths of groups the device should be added to. e.g. [\"/parent/child\", \"/puppet_managed\"]'
+    desc 'An array where the entries are fullpaths of groups the device should be added to. e.g. [\"parent/child\", \"puppet_managed\"]'
     defaultto []
   end
 

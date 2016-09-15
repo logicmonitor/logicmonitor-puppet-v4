@@ -243,7 +243,6 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                    Puppet::Provider::Logicmonitor::DEVICE_GROUPS_ENDPOINT,
                                    Puppet::Provider::Logicmonitor::HTTP_GET,
                                    build_query_params(device_group_filters, %w(appliesTo fullPath)))
-
       if valid_api_response?(device_group_response,true)
         device_group_response['data']['items'].each do |device_group|
           group_list.push "#{device_group['fullPath']}" if nil_or_empty?(device_group['appliesTo'])
@@ -254,6 +253,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     else
       alert 'Unable to get Device'
     end
+
     debug "Finished in #{(Time.now-start)*1000.0} ms"
     group_list
   end
@@ -293,7 +293,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                                   'name,value'))
       if valid_api_response?(device_properties, true)
         device_properties['data']['items'].each do |property|
-          name = property['name'].downcase
+          name = property['name']
           value = property['value']
           if value.include?('********') && resource[:properties].has_key?(name)
             debug 'Found password property. Verifying'
