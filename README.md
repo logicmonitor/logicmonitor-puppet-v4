@@ -6,7 +6,7 @@ LogicMonitor-Puppet-v4 is a Puppet module for automating and managing your Logic
 (SaaS based, full stack, datacenter monitoring) portal via Puppet, specifically for version 4.
 
 ##LogicMonitor's Puppet module overview
-LogicMonitor's Puppet module defines 5 classes and 4 custom resource types. For additional documentation visit 
+LogicMonitor's Puppet module defines 4 classes and 4 custom resource types. For additional documentation visit 
 <insert Help Documentation URL>
 
 Classes:
