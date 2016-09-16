@@ -6,7 +6,7 @@ LogicMonitor-Puppet-v4 is a Puppet module for automating and managing your Logic
 (SaaS based, full stack, datacenter monitoring) portal via Puppet, specifically for version 4.
 
 ##LogicMonitor's Puppet module overview
-LogicMonitor's Puppet module defines 4 classes and 4 custom resource types. For additional documentation visit 
+LogicMonitor's Puppet module defines 5 classes and 4 custom resource types. For additional documentation visit 
 <insert Help Documentation URL>
 
 Classes:
@@ -14,6 +14,7 @@ Classes:
 * logicmonitor::master: Collects the exported lm_host resources and lm_hostgroup resources. Communicates with the LogicMonitor API
 * logicmonitor::collector: Handles LogicMonitor collector management for the device. Declares an instance of lm_collector and lm_installer resources.
 * logicmonitor::device: Declares an exported lm_device resource.
+* logicmonitor::device_group: Declares an export lm_device_group resource. 
 
 Resource Types:
 * lm_device_group: Defines the behavior of the handling of LogicMonitor device groups. Recommend using exported resources.
