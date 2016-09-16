@@ -11,7 +11,6 @@ LogicMonitor's Puppet module defines 5 classes and 4 custom resource types. For 
 
 Classes:
 * logicmonitor: Handles setting credentials needed for interacting with the LogicMonitor API.
-* logicmonitor::config: Provides the default credentials to the logicmonitor class.
 * logicmonitor::master: Collects the exported lm_host resources and lm_hostgroup resources. Communicates with the LogicMonitor API
 * logicmonitor::collector: Handles LogicMonitor collector management for the device. Declares an instance of lm_collector and lm_installer resources.
 * logicmonitor::device: Declares an exported lm_device resource.
@@ -53,7 +52,7 @@ Upcoming features:
 
 ## Requirements
 
-** Ruby (1.9.3, 2.0.X, 2.1.X) and Puppet 4.X **
+** Ruby (1.9.3, 2.0.X, 2.1.X) and Puppet 3.X OR 4.X **
 
 This is a module written for Puppet 4
 
