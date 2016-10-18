@@ -116,39 +116,48 @@ SSL with your LogicMonitor account.
       # Managing the properties on the root device group ("/") will set the properties for the entire
       # LogicMonitor account.  These properties can be over-written by setting them on a child
       # group, or on an individual device.
-      class { 'logicmonitor::device_group' :
-        full_path  => "/",
-        properties => {
-          "snmp.community"  => "public",
-          "tomcat.jmxports" => "9000",
-          "mysql.user"      => "monitoring",
-          "mysql.pass"      => "MyMysqlPW"
-        },
-      }
+      #
+      # There are 2 methods for defining device groups.
+      # If you are only defining a single device group resource per node definition,
+      # You can use the class syntax.
+      # 
+      # e.g.
+      #
+      # class { 'logicmonitor::device_group' :
+      #   full_path  => "/",
+      #   properties => {
+      #     "snmp.community"  => "public",
+      #     "tomcat.jmxports" => "9000",
+      #     "mysql.user"      => "monitoring",
+      #     "mysql.pass"      => "MyMysqlPW"
+      #   },
+      # }
+      #
+      # Otherwise, you will need to define device groups using the device_group resource
+      # notation.
+      #
+      # We recommend defining device groups as exported resources.
+      #
 
       # create "Development" and "Operations" device groups
-      class { 'logicmonitor::device_group' : 
-        full_path  => "/Development",
+      @@device_group { "/Development":
+        full_path  => ,
         description => 'This is the top level puppet managed device group',
       }
 
-      class { 'logicmonitor::device_group' : 
-        full_path  => "/Operations",
-      }
-
+      @@device_group {"/Operations":}
+      
       # Create US-West device group, as well as a sub-group "production".
       # The "production" group will have use a different SNMP community
-      class { 'logicmonitor::device_group' : 
-        full_path => "/US-West"
-      }
-      class { 'logicmonitor::device_group' : 
-        full_path  => "/US-West/production",
+
+      @@device_group{"/US-West":}
+
+      @@device_group{"/US-West/production":
         properties => { "snmp.community"=>"secret_community_RO" },
       }
+      
+      @@device_group{"/US-East":}
 
-      class { 'logicmonitor::device_group' : 
-        full_path => "/US-East"
-      }
 
       # Your puppet master node should be monitored too of course!  Add it in,
       # place it in two device groups, and set device specific custom properties

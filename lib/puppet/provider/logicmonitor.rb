@@ -234,10 +234,10 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   def recursive_group_create(connection, full_path, description, properties, disable_alerting)
     path = full_path.rpartition('/')
     parent_path = path[0]
-    debug "Checking for parent device group: #{path[2]}"
+    debug "Checking for parent device group: #{path[0]}"
     parent_id = 1
     unless nil_or_empty?(parent_path)
-      parent = get_device_group(parent_path, 'id')
+      parent = get_device_group(connection, parent_path, 'id')
       if nil_or_empty?(parent)
         parent_ret = recursive_group_create(connection, parent_path, nil, nil, true)
         unless parent_ret.nil?
