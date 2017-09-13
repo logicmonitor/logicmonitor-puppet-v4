@@ -196,12 +196,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     group_json = rest(connection,
                       'device/groups',
                       HTTP_GET,
-                      build_query_params("fullPath:#{full_path}", fields, 1))
-    debug group_json
-    # debug rest(connection,
-    #                   'device/groups',
-    #                   HTTP_GET,
-    #                   build_query_params("fullPath~#{full_path}", nil))
+                      build_query_params("fullPath:#{full_path.sub(/^\//,'')}", fields, 1))
     valid_api_response?(group_json, true) ? group_json['data']['items'][0] : nil
   end
 
@@ -241,7 +236,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     debug "Checking for parent device group: #{path[0]}"
     parent_id = 1
     unless nil_or_empty?(parent_path)
-      parent = get_device_group(connection, parent_path.sub('/',''), 'id')
+      parent = get_device_group(connection, parent_path, 'id')
       if nil_or_empty?(parent)
         parent_ret = recursive_group_create(connection, parent_path, nil, nil, true)
         unless parent_ret.nil?

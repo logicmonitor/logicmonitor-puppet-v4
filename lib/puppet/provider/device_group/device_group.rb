@@ -88,7 +88,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     start = Time.now
     debug "Checking if device group \"#{resource[:full_path]}\" exists"
     connection = self.class.get_connection(resource[:account])
-    if resource[:full_path].eql?('/')
+    if resource[:full_path].eql?('/') || resource[:full_path].eql?('')
       true
     else
       device_group = get_device_group(connection, resource[:full_path])

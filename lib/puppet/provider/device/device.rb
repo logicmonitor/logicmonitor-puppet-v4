@@ -62,7 +62,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     debug "Creating device: \"#{resource[:hostname]}\""
     connection = self.class.get_connection(resource[:account])
     resource[:groups].each do |group|
-      if nil_or_empty?(get_device_group(connection, group.sub(/^\//, ""), 'id'))
+      if nil_or_empty?(get_device_group(connection, group, 'id'))
         debug "Couldn't find parent group #{group}. Creating it."
         recursive_group_create(connection, group, nil, nil, false)
       end
@@ -245,7 +245,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                    build_query_params(device_group_filters, %w(appliesTo fullPath)))
       if valid_api_response?(device_group_response,true)
         device_group_response['data']['items'].each do |device_group|
-          group_list.push "#{device_group['fullPath']}" if nil_or_empty?(device_group['appliesTo'])
+          group_list.push "#{device_group['fullPath'].sub(/^\//,'')}" if nil_or_empty?(device_group['appliesTo'])
         end
       else
         alert 'Unable to get Device Groups'
@@ -374,7 +374,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     device_hash['description'] = description unless nil_or_empty?(description)
     group_ids = []
     groups.each do |group|
-      group_ids << get_device_group(connection, group.sub(/^\//, ''), 'id')['id'].to_s
+      group_ids << get_device_group(connection, group, 'id')['id'].to_s
     end
     device_hash['hostGroupIds'] = group_ids.join(',')
     device_hash['disableAlerting'] = disable_alerting
