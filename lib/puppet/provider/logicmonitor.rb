@@ -196,8 +196,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     group_json = rest(connection,
                       'device/groups',
                       HTTP_GET,
-                      build_query_params("fullPath:#{full_path}", fields, 1))
-
+                      build_query_params("fullPath:#{full_path.sub(/^\//,'')}", fields, 1))
     valid_api_response?(group_json, true) ? group_json['data']['items'][0] : nil
   end
 

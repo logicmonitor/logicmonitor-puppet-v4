@@ -142,7 +142,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
-  # Retrieves Description 
+  # Retrieves Description
   def description
     start = Time.now
     debug "Checking description for device: \"#{resource[:hostname]}\""
@@ -153,7 +153,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     device ? device['description'] : nil
   end
 
-  # Updates Description 
+  # Updates Description
   def description=(value)
     start = Time.now
     debug "Updating description on device: \"#{resource[:hostname]}\""
@@ -169,7 +169,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     debug "Finished in #{(Time.now-start)*1000.0} ms"
   end
 
-  # Retrieves Collector 
+  # Retrieves Collector
   def collector
     start = Time.now
     debug "Checking collector for device: \"#{resource[:hostname]}\""
@@ -179,7 +179,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     agent ? agent['description'] : nil
   end
 
-  # Updates Collector 
+  # Updates Collector
   def collector=(value)
     start = Time.now
     debug "Updating collector on device: \"#{resource[:hostname]}\""
@@ -245,7 +245,7 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
                                    build_query_params(device_group_filters, %w(appliesTo fullPath)))
       if valid_api_response?(device_group_response,true)
         device_group_response['data']['items'].each do |device_group|
-          group_list.push "#{device_group['fullPath']}" if nil_or_empty?(device_group['appliesTo'])
+          group_list.push "#{device_group['fullPath'].sub(/^\//,'')}" if nil_or_empty?(device_group['appliesTo'])
         end
       else
         alert 'Unable to get Device Groups'
@@ -372,13 +372,13 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
     device_hash['displayName'] = display_name
     device_hash['preferredCollectorId'] = get_agent_by_description(connection, collector, 'id')['id'] unless nil_or_empty?(collector)
     device_hash['description'] = description unless nil_or_empty?(description)
-    group_ids = Array.new
+    group_ids = []
     groups.each do |group|
       group_ids << get_device_group(connection, group, 'id')['id'].to_s
     end
     device_hash['hostGroupIds'] = group_ids.join(',')
     device_hash['disableAlerting'] = disable_alerting
-    custom_properties = Array.new
+    custom_properties = []
     unless nil_or_empty?(properties)
       properties.each_pair do |key, value|
         custom_properties << {'name' => key, 'value' => value}
