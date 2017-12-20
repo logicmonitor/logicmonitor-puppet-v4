@@ -104,7 +104,16 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     else
       http = connection
     end
-    download_collector ? http.request(request).body : JSON.parse(http.request(request).body)
+
+    response = http.request(request)
+
+    if response.status == 429
+      debug "Error: Request Rate Limited, sleep 1 minute, retry"
+      sleep 60
+      return rest(connection, endpoint, http_method, query_params, data, download_collector)
+    end
+
+    download_collector ? response.body : JSON.parse(response.body)
   end
 
 
