@@ -5,3 +5,4 @@ spec/fixtures/modules/stdlib/
 Vagrantfile
 junit/
 log/
+pkg/
