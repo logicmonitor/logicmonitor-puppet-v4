@@ -66,27 +66,37 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     # Sanity Check on Endpoint
     endpoint.prepend('/') unless endpoint.start_with?'/'
 
+    http_method = http_method.upcase
+
     # Build URI and add query Parameters
     uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest#{endpoint}")
+
+    # For PATCH requests, we want to use opType replace so that device/device group 
+    # properties set outside of the module don't get deleted
+    if http_method == HTTP_PATCH
+      query_params['opType'] = 'replace'
+    end
+
+    # URL Encode Query Parameters
     uri.query = URI.encode_www_form query_params unless nil_or_empty?(query_params)
 
     # Build Request Object
     request = nil
-    if http_method.upcase == HTTP_POST
+    if http_method == HTTP_POST
       raise ArgumentError, 'Invalid data for HTTP POST request' if nil_or_empty? data
       request = Net::HTTP::Post.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
-    elsif http_method.upcase == HTTP_PUT
+    elsif http_method == HTTP_PUT
       raise ArgumentError, 'Invalid data for HTTP PUT request' if nil_or_empty? data
       request = Net::HTTP::Put.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
-    elsif http_method.upcase == HTTP_PATCH
+    elsif http_method == HTTP_PATCH
       raise ArgumentError, 'Invalid data for HTTP PATCH request' if nil_or_empty? data
       request = Net::HTTP::Patch.new uri.request_uri, {'Content-Type' => 'application/json'}
       request.body = data
-    elsif http_method.upcase == HTTP_GET
+    elsif http_method == HTTP_GET
       request = Net::HTTP::Get.new uri.request_uri, {'Accept' => 'application/json'}
-    elsif http_method.upcase == HTTP_DELETE
+    elsif http_method == HTTP_DELETE
       request = Net::HTTP::Delete.new uri.request_uri, {'Accept' => 'application/json'}
     else
       debug("Error: Invalid HTTP Method: #{http_method}")
