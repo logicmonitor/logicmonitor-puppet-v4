@@ -1,5 +1,5 @@
 name            'logicmonitor-logicmonitor'
-version         '2.0.5'
+version         '2.0.6'
 summary         'Automate monitoring of your devices with LogicMonitor'
 description     'This Puppet module allows you to automate management of collectors, devices, and device groups in your
                  LogicMonitor portal via Puppet version 4.'

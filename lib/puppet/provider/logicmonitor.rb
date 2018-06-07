@@ -119,7 +119,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     begin
       response = http.request(request)
 
-      if response.status == 429
+      if response.code == 429
         rate_limited = true
         debug "Error: Request Rate Limited, sleep 1 second, retry"
         sleep 1
