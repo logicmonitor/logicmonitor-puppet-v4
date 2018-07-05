@@ -1,6 +1,6 @@
 {
   "name": "logicmonitor-logicmonitor",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "author": "Samuel Dacanay",
   "license": "Apache-2.0",
   "summary": "A module for managing LogicMonitor devices, device groups, and collectors",
