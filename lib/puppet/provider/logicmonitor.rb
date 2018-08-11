@@ -109,7 +109,6 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     if connection.nil?
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       http.start
     else
       http = connection
