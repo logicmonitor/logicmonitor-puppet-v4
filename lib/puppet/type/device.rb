@@ -6,7 +6,7 @@
 # === Parameters
 #
 # [*namevar*]
-#    Or "hostname" 
+#    Or "hostname"
 #    Sets the path of the group. Path must start with a "/"
 #
 # [*display_name*]
@@ -77,7 +77,7 @@ Puppet::Type.newtype(:device) do
   @doc = 'Manage a LogicMonitor Device'
   ensurable
 
-  newparam(:hostname, :namevar => true) do
+  newparam(:hostname, namevar: true) do
     desc 'The name of the device. Defaults to the fully qualified domain name. Accepts fully qualified domain name or ip address as input.'
   end
 
@@ -100,11 +100,11 @@ Puppet::Type.newtype(:device) do
 
   newproperty(:disable_alerting) do
     desc 'Enable / Disable alerting for this device'
-    newvalues(:true,:false)
+    newvalues(:true, :false)
     defaultto false
   end
 
-  newproperty(:groups, :array_matching => :all) do
+  newproperty(:groups, array_matching: :all) do
     desc 'An array where the entries are fullpaths of groups the device should be added to. e.g. [\"parent/child\", \"puppet_managed\"]'
     defaultto []
   end
@@ -116,23 +116,23 @@ Puppet::Type.newtype(:device) do
     validate do |value|
       unless value.class == Hash
         raise ArgumentError, "#{value} is not a valid set of device properties. Properties must be in the format "\
-                             "{\"propName0\"=>\"propValue0\",\"propName1\"=>\"propValue1\", ... }"
+                             '{"propName0"=>"propValue0","propName1"=>"propValue1", ... }'
       end
     end
   end
 
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
-    validate {|value| raise ArgumentError, 'account may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'account may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_id) do
     desc 'This is a LogicMonitor user\'s API Token Access ID.'
-    validate {|value| raise ArgumentError, 'access_id may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'access_id may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_key) do
     desc 'This is a LogicMonitor user\'s API Token Access Key.'
-    validate {|value| raise ArgumentError, 'access_key may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'access_key may not be nil or empty' if value.nil? || value.empty? }
   end
 end

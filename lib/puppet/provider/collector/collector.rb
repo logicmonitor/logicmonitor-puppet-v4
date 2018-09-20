@@ -21,7 +21,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
-Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::Logicmonitor) do
+Puppet::Type.type(:collector).provide(:collector, parent: Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of collectors'
 
   # Creates a Collector
@@ -34,7 +34,7 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
                             nil,
                             build_collector_json(resource[:description]))
     alert(create_collector) unless valid_api_response?(create_collector)
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
   end
 
   # Deletes a Collector
@@ -51,7 +51,7 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
                               Puppet::Provider::Logicmonitor::COLLECTOR_ENDPOINT % collector['data']['items'][0]['id'],
                               Puppet::Provider::Logicmonitor::HTTP_DELETE)
       alert(delete_collector) unless valid_api_response?(delete_collector, false, true)
-      debug "Finished in #{(Time.now-start)*1000.0} ms"
+      debug "Finished in #{(Time.now - start) * 1000.0} ms"
     else
       alert collector.to_s
     end
@@ -66,17 +66,17 @@ Puppet::Type.type(:collector).provide(:collector, :parent => Puppet::Provider::L
                       Puppet::Provider::Logicmonitor::HTTP_GET,
                       build_query_params("description:#{resource[:description]}", 'id', 1))
     if valid_api_response?(collectors, true)
-      debug "Finished in #{(Time.now-start)*1000.0} ms"
+      debug "Finished in #{(Time.now - start) * 1000.0} ms"
       return true
     end
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
     false
   end
 
   # Builds JSON required to create a Collector
   # description: description of collector
   def build_collector_json(description)
-    collector_hash = Hash.new
+    collector_hash = {}
     collector_hash['description'] = description
 
     # The Rest of the fields are default values.

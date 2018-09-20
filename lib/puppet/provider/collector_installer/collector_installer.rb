@@ -21,7 +21,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
-Puppet::Type.type(:collector_installer).provide(:collector_installer, :parent => Puppet::Provider::Logicmonitor) do
+Puppet::Type.type(:collector_installer).provide(:collector_installer, parent: Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the download and installation of a collector'
 
   # Creates a Collector Installer which downloads and installs a LogicMonitor Collector
@@ -48,10 +48,10 @@ Puppet::Type.type(:collector_installer).provide(:collector_installer, :parent =>
       debug "Download Finished in #{(Time.now - start) * 1000.0} ms"
       install_start = Time.now
       debug 'Installing Collector'
-      File.chmod(0755, installation_binary)
+      File.chmod(0o755, installation_binary)
       `#{installation_binary} -y`
-      debug "Collector Install took #{(Time.now-install_start)*1000.0} ms"
-      debug "Total took #{(Time.now-start)*1000.0} ms"
+      debug "Collector Install took #{(Time.now - install_start) * 1000.0} ms"
+      debug "Total took #{(Time.now - start) * 1000.0} ms"
     end
   end
 
@@ -65,14 +65,14 @@ Puppet::Type.type(:collector_installer).provide(:collector_installer, :parent =>
       `#{resource[:install_dir]}agent/bin/sbshutdown`
       `#{resource[:install_dir]}agent/bin/uninstall.pl`
 
-      if resource[:architecture].include?('64')
-        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{id}_64.bin"
-      else
-        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{id}_32.bin"
-      end
+      installation_binary = if resource[:architecture].include?('64')
+                              "#{resource[:install_dir]}logicmonitorsetup#{id}_64.bin"
+                            else
+                              "#{resource[:install_dir]}logicmonitorsetup#{id}_32.bin"
+                            end
       File.delete installation_binary
     end
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
   end
 
   # Checks that a collector installation binary exists
@@ -81,15 +81,15 @@ Puppet::Type.type(:collector_installer).provide(:collector_installer, :parent =>
     debug 'Checking if Collector & Installation Binary Exists'
     collector = get_agent_by_description(nil, resource[:description], 'id')
     if collector
-      if resource[:architecture].include?('64')
-        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{collector['id']}_64.bin"
-      else
-        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{collector['id']}_32.bin"
-      end
-      debug "Finished in #{(Time.now-start)*1000.0} ms"
-      return File.exists?(installation_binary)
+      installation_binary = if resource[:architecture].include?('64')
+                              "#{resource[:install_dir]}logicmonitorsetup#{collector['id']}_64.bin"
+                            else
+                              "#{resource[:install_dir]}logicmonitorsetup#{collector['id']}_32.bin"
+                            end
+      debug "Finished in #{(Time.now - start) * 1000.0} ms"
+      return File.exist?(installation_binary)
     end
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
     false
   end
 end

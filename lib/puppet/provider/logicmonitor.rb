@@ -29,32 +29,31 @@ require 'json'
 require 'date'
 
 class Puppet::Provider::Logicmonitor < Puppet::Provider
-
   # Supported HTTP Methods
-  HTTP_POST = 'POST'
-  HTTP_GET = 'GET'
-  HTTP_PUT = 'PUT'
-  HTTP_PATCH = 'PATCH'
-  HTTP_DELETE = 'DELETE'
+  HTTP_POST = 'POST'.freeze
+  HTTP_GET = 'GET'.freeze
+  HTTP_PUT = 'PUT'.freeze
+  HTTP_PATCH = 'PATCH'.freeze
+  HTTP_DELETE = 'DELETE'.freeze
 
   # Supported Collector Architectures
-  LINUX_32 = 'linux32'
-  LINUX_64 = 'linux64'
+  LINUX_32 = 'linux32'.freeze
+  LINUX_64 = 'linux64'.freeze
 
   # Device API endpoints
-  DEVICE_ENDPOINT = '/device/devices/%d'
-  DEVICES_ENDPOINT = '/device/devices'
-  DEVICE_PROPERTIES_ENDPOINT = '/device/devices/%d/properties'
+  DEVICE_ENDPOINT = '/device/devices/%d'.freeze
+  DEVICES_ENDPOINT = '/device/devices'.freeze
+  DEVICE_PROPERTIES_ENDPOINT = '/device/devices/%d/properties'.freeze
 
   # Device Group API endpoints
-  DEVICE_GROUP_ENDPOINT = '/device/groups/%d'
-  DEVICE_GROUPS_ENDPOINT = '/device/groups'
-  DEVICE_GROUP_PROPERTIES_ENDPOINT = '/device/groups/%d/properties'
+  DEVICE_GROUP_ENDPOINT = '/device/groups/%d'.freeze
+  DEVICE_GROUPS_ENDPOINT = '/device/groups'.freeze
+  DEVICE_GROUP_PROPERTIES_ENDPOINT = '/device/groups/%d/properties'.freeze
 
   # Collector API endpoints
-  COLLECTOR_ENDPOINT = '/setting/collectors/%d'
-  COLLECTORS_ENDPOINT = '/setting/collectors'
-  COLLECTOR_DOWNLOAD_ENDPOINT = '/setting/collectors/%d/installers/%s'
+  COLLECTOR_ENDPOINT = '/setting/collectors/%d'.freeze
+  COLLECTORS_ENDPOINT = '/setting/collectors'.freeze
+  COLLECTOR_DOWNLOAD_ENDPOINT = '/setting/collectors/%d/installers/%s'.freeze
 
   # Execute a RESTful request to LogicMonitor
   # endpoint: RESTful endpoint to request
@@ -62,16 +61,16 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # query_params: Query Parameters to use in request (to modify results)
   # data: JSON data to send in HTTP POST RESTful requests
   # download_collector: If we are executing a download the URL will be santaba/do instead of santaba/rest
-  def rest(connection, endpoint, http_method, query_params={}, data=nil, download_collector=false)
+  def rest(connection, endpoint, http_method, query_params = {}, data = nil, download_collector = false)
     # Sanity Check on Endpoint
-    endpoint.prepend('/') unless endpoint.start_with?'/'
+    endpoint.prepend('/') unless endpoint.start_with? '/'
 
     http_method = http_method.upcase
 
     # Build URI and add query Parameters
     uri = URI.parse("https://#{resource[:account]}.logicmonitor.com/santaba/rest#{endpoint}")
 
-    # For PATCH requests, we want to use opType replace so that device/device group 
+    # For PATCH requests, we want to use opType replace so that device/device group
     # properties set outside of the module don't get deleted
     if http_method == HTTP_PATCH
       query_params['opType'] = 'replace'
@@ -84,20 +83,20 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     request = nil
     if http_method == HTTP_POST
       raise ArgumentError, 'Invalid data for HTTP POST request' if nil_or_empty? data
-      request = Net::HTTP::Post.new uri.request_uri, {'Content-Type' => 'application/json'}
+      request = Net::HTTP::Post.new uri.request_uri, 'Content-Type' => 'application/json'
       request.body = data
     elsif http_method == HTTP_PUT
       raise ArgumentError, 'Invalid data for HTTP PUT request' if nil_or_empty? data
-      request = Net::HTTP::Put.new uri.request_uri, {'Content-Type' => 'application/json'}
+      request = Net::HTTP::Put.new uri.request_uri, 'Content-Type' => 'application/json'
       request.body = data
     elsif http_method == HTTP_PATCH
       raise ArgumentError, 'Invalid data for HTTP PATCH request' if nil_or_empty? data
-      request = Net::HTTP::Patch.new uri.request_uri, {'Content-Type' => 'application/json'}
+      request = Net::HTTP::Patch.new uri.request_uri, 'Content-Type' => 'application/json'
       request.body = data
     elsif http_method == HTTP_GET
-      request = Net::HTTP::Get.new uri.request_uri, {'Accept' => 'application/json'}
+      request = Net::HTTP::Get.new uri.request_uri, 'Accept' => 'application/json'
     elsif http_method == HTTP_DELETE
-      request = Net::HTTP::Delete.new uri.request_uri, {'Accept' => 'application/json'}
+      request = Net::HTTP::Delete.new uri.request_uri, 'Accept' => 'application/json'
     else
       debug("Error: Invalid HTTP Method: #{http_method}")
     end
@@ -120,14 +119,14 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
 
       if response.code == '429'
         rate_limited = true
-        debug "Error: Request Rate Limited, sleep 1 second, retry"
+        debug 'Error: Request Rate Limited, sleep 1 second, retry'
         sleep 1
         raise 'Rate Limited'
-      end 
+      end
 
-      unless response.kind_of? Net::HTTPSuccess
+      unless response.is_a? Net::HTTPSuccess
         alert "Request failed: endpoint: #{endpoint}, method: #{http_method}, data: #{data}, query_param: #{uri.query}, response code: #{response.code}, response body: #{response.body}"
-        raise "Request Failed"
+        raise 'Request Failed'
       end
     rescue Exception => e
       if rate_limited
@@ -140,14 +139,13 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     download_collector ? response.body : JSON.parse(response.body)
   end
 
-
   # Builds a Hash containing LogicMonitor-supported RESTful query parameters
   # filter: Filters the response according to the operator and value specified. Example: 'id>4'
   # fields: Filters the response to only include the following fields for each object
   # size: The number of results to display
   # patch_ields: If we are preparing to perform an HTTP PATCH, we need to specify which fields we are updating
-  def build_query_params(filter=[], fields=[], size=-1, patch_fields=[])
-    query_params = Hash.new
+  def build_query_params(filter = [], fields = [], size = -1, patch_fields = [])
+    query_params = {}
     unless nil_or_empty?(filter)
       query_params['filter'] = filter
     end
@@ -170,11 +168,11 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   end
 
   # Helper method to generate a LMv1 API Token
-  def generate_token(endpoint, http_method, data='')
+  def generate_token(endpoint, http_method, data = '')
     timestamp = DateTime.now.strftime('%Q')
-    unsigned_data = "#{http_method.upcase}#{timestamp}#{data.to_s}#{endpoint}"
+    unsigned_data = "#{http_method.upcase}#{timestamp}#{data}#{endpoint}"
     signature = Base64.strict_encode64(
-      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), resource[:access_key], unsigned_data)
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), resource[:access_key], unsigned_data),
     ).strip
     "LMv1 #{resource[:access_id]}:#{signature}:#{timestamp}"
   end
@@ -191,7 +189,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # resp: Response from LogicMonitor API
   # multi: If there could be multiple items, we should make sure items are not nil/empty
   # delete: If we are deleting something we expect data to be nil, so just check status
-  def valid_api_response?(resp, multi=false, delete=false)
+  def valid_api_response?(resp, multi = false, delete = false)
     if delete
       if resp['status'] == 200
         return true
@@ -213,7 +211,7 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # connection: connection to use for executing API request
   # description: description of collector (usually defaults to its hostname)
   # fields: any fields that should be returned specifically (defaults to nil)
-  def get_agent_by_description(connection, description, fields=nil)
+  def get_agent_by_description(connection, description, fields = nil)
     agents_json = rest(connection,
                        COLLECTORS_ENDPOINT,
                        HTTP_GET,
@@ -225,11 +223,11 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # connection: connection to use for executing API request
   # full_path: full path of group location (similar to file path)
   # fields: fields needed in request (to reduce overhead we can limit what LogicMonitor responds with)
-  def get_device_group(connection, full_path, fields=nil)
+  def get_device_group(connection, full_path, fields = nil)
     group_json = rest(connection,
                       'device/groups',
                       HTTP_GET,
-                      build_query_params("fullPath:#{full_path.sub(/^\//,'')}", fields, 1))
+                      build_query_params("fullPath:#{full_path.sub(/^\//, '')}", fields, 1))
     valid_api_response?(group_json, true) ? group_json['data']['items'][0] : nil
   end
 
@@ -241,16 +239,16 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
   # parent_id: device group ID of parent group (root level device group ID == 1)
   def build_group_json(full_path, description, properties, disable_alerting, parent_id)
     path = full_path.rpartition('/')
-    group_hash = {'name' => path[2]}
+    group_hash = { 'name' => path[2] }
     group_hash['parentId'] = parent_id
     group_hash['disableAlerting'] = disable_alerting
     unless description.nil?
       group_hash['description'] = description
     end
-    custom_properties = Array.new
+    custom_properties = []
     unless nil_or_empty?(properties)
       properties.each_pair do |key, value|
-        custom_properties << {'name' => key, 'value' => value}
+        custom_properties << { 'name' => key, 'value' => value }
       end
       group_hash['customProperties'] = custom_properties
     end

@@ -21,9 +21,9 @@ RSpec.describe 'device definition' do
         disable_alerting => false,
       }
     EOM
-    it 'should should apply the manifest without errors' do
-      apply_manifest(manifest, :catch_failures => true)
-      expect(apply_manifest(manifest, :catch_failures => true).exit_code).to be 0
+    it 'shoulds apply the manifest without errors' do
+      apply_manifest(manifest, catch_failures: true)
+      expect(apply_manifest(manifest, catch_failures: true).exit_code).to be 0
     end
   end
 end

@@ -6,7 +6,7 @@
 # === Parameters
 #
 # [*namevar*]
-#    Or "fullpath" 
+#    Or "fullpath"
 #    Sets the path of the group. Path must start with a "/"
 #
 # [*description*]
@@ -66,7 +66,7 @@ Puppet::Type.newtype(:device_group) do
   @doc = 'Manage a LogicMonitor Device Group'
   ensurable
 
-  newparam(:full_path, :namevar => true) do
+  newparam(:full_path, namevar: true) do
     desc 'The full path including all parent groups. Format: \"/parent/child\"'
     validate do |value|
       if value.start_with?('/')
@@ -86,7 +86,7 @@ Puppet::Type.newtype(:device_group) do
     validate do |value|
       unless value.class == Hash
         raise ArgumentError, "#{value} is not a valid set of group properties. Properties must be in the format "\
-                             "{\"propName0\"=>\"propValue0\",\"propName1\"=>\"propValue1\", ... }"
+                             '{"propName0"=>"propValue0","propName1"=>"propValue1", ... }'
       end
     end
   end
@@ -100,16 +100,16 @@ Puppet::Type.newtype(:device_group) do
 
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
-    validate {|value| raise ArgumentError, 'account may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'account may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_id) do
     desc 'This is a LogicMonitor user\'s API Token Access ID.'
-    validate {|value| raise ArgumentError, 'access_id may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'access_id may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_key) do
     desc 'This is a LogicMonitor user\'s API Token Access Key.'
-    validate {|value| raise ArgumentError, 'access_key may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'access_key may not be nil or empty' if value.nil? || value.empty? }
   end
 end

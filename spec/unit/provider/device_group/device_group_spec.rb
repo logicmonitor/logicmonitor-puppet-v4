@@ -3,16 +3,14 @@ require_relative '../../../spec_helper'
 describe Puppet::Type.type(:device_group).provider(:device_group) do
   let :resource do
     Puppet::Type.type(:device_group).new(
-        {
-            :ensure           => :present,
-            :full_path        => 'groupunittest',
-            :description      => 'unit testing',
-            :disable_alerting => true,
-            :properties       => {'testgroup1' => 'groupval1'},
-            :account          => 'puppettest',
-            :access_id        => '9K3A362Bv2N9pGbfgA22',
-            :access_key       => '+95[jRp)8{~]+34_Xr5hk5ga47cvAp4!vRv]2b6%',
-        }
+      ensure: :present,
+      full_path: 'groupunittest',
+      description: 'unit testing',
+      disable_alerting: true,
+      properties: { 'testgroup1' => 'groupval1' },
+      account: 'puppettest',
+      access_id: '9K3A362Bv2N9pGbfgA22',
+      access_key: '+95[jRp)8{~]+34_Xr5hk5ga47cvAp4!vRv]2b6%',
     )
   end
 
@@ -22,7 +20,7 @@ describe Puppet::Type.type(:device_group).provider(:device_group) do
 
   describe 'self.prefetch' do
     it 'exists' do
-      provider.class.prefetch({'device_group' => resource})
+      provider.class.prefetch('device_group' => resource)
     end
   end
 
@@ -41,27 +39,27 @@ describe Puppet::Type.type(:device_group).provider(:device_group) do
 
   describe 'exists?' do
     it 'checks if device_group exists' do
-      expect(provider.exists?).to be_falsey
+      expect(provider).not_to be_exists
     end
   end
 
   describe 'create' do
     it 'creates a device_group' do
-      expect { provider.create }.to_not raise_error
+      expect { provider.create }.not_to raise_error
     end
   end
 
   describe 'update_device_group' do
     it 'updates a device_group' do
       groups = ['unittest']
-      props = {'testgroup1' => 'groupval1'}
+      props = { 'testgroup1' => 'groupval1' }
       expect {
         provider.update_device_group(nil,
-                                    'groupunittest',
-                                    'unit testing',
-                                    props,
-                                    true)
-      }.to_not raise_error
+                                     'groupunittest',
+                                     'unit testing',
+                                     props,
+                                     true)
+      }.not_to raise_error
     end
   end
 
@@ -73,7 +71,7 @@ describe Puppet::Type.type(:device_group).provider(:device_group) do
 
   describe 'description=' do
     it 'updates the device_group\'s description' do
-      expect { provider.description=('updated unit testing') }.to_not raise_error
+      expect { provider.description = 'updated unit testing' }.not_to raise_error
     end
   end
 
@@ -85,7 +83,7 @@ describe Puppet::Type.type(:device_group).provider(:device_group) do
 
   describe 'disable_alerting=' do
     it 'updates the device_group\'s disable_alerting setting' do
-      expect { provider.disable_alerting=(false) }.to_not raise_error
+      expect { provider.disable_alerting = false }.not_to raise_error
     end
   end
 
@@ -100,14 +98,14 @@ describe Puppet::Type.type(:device_group).provider(:device_group) do
 
   describe 'properties=' do
     it 'updates the device_group\'s propreties' do
-      properties = {'test1' => 'val1', 'test2' => 'val2'}
-      expect { provider.properties=(properties) }.to_not raise_error
+      properties = { 'test1' => 'val1', 'test2' => 'val2' }
+      expect { provider.properties = properties }.not_to raise_error
     end
   end
 
   describe 'destroy' do
     it 'destroys a device_group' do
-      expect { provider.destroy }.to_not raise_error
+      expect { provider.destroy }.not_to raise_error
     end
   end
 end

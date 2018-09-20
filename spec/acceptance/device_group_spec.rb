@@ -16,9 +16,9 @@ RSpec.describe 'device group definition' do
         properties       => {'testproperty' => 'value'},
       }
     EOM
-    it 'should apply the manifest without errors' do
-      apply_manifest(manifest, :catch_failures => true)
-      expect(apply_manifest(manifest, :catch_failures => true).exit_code).to be 0
+    it 'applies the manifest without errors' do
+      apply_manifest(manifest, catch_failures: true)
+      expect(apply_manifest(manifest, catch_failures: true).exit_code).to be 0
     end
   end
 end
@@ -43,13 +43,12 @@ RSpec.describe 'multiple device group definition' do
         properties       => {'testproperty' => 'value'},
       }
     EOM
-    it 'should apply the manifest without errors' do
-      apply_manifest(manifest, :catch_failures => true)
-      expect(apply_manifest(manifest, :catch_failures => true).exit_code).to be 0
+    it 'applies the manifest without errors' do
+      apply_manifest(manifest, catch_failures: true)
+      expect(apply_manifest(manifest, catch_failures: true).exit_code).to be 0
     end
   end
 end
-
 
 RSpec.describe 'nested device group definition' do
   context 'valid device_group definition for multiple groups' do
@@ -67,9 +66,9 @@ RSpec.describe 'nested device group definition' do
         properties       => {'testproperty' => 'value'},
       }
     EOM
-    it 'should apply the manifest without errors' do
-      apply_manifest(manifest, :catch_failures => true)
-      expect(apply_manifest(manifest, :catch_failures => true).exit_code).to be 0
+    it 'applies the manifest without errors' do
+      apply_manifest(manifest, catch_failures: true)
+      expect(apply_manifest(manifest, catch_failures: true).exit_code).to be 0
     end
   end
 end

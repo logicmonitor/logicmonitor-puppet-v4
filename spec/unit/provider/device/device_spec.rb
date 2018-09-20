@@ -3,19 +3,17 @@ require_relative '../../../spec_helper'
 describe Puppet::Type.type(:device).provider(:device) do
   let :resource do
     Puppet::Type.type(:device).new(
-        {
-            :ensure           => :present,
-            :hostname         => '172.16.208.131',
-            :display_name     => 'unittest',
-            :collector        => 'agent.localdomain',
-            :description      => 'unit testing',
-            :disable_alerting => true,
-            :groups           => ['unittest'],
-            :properties       => {'test1' => 'val1'},
-            :account          => 'puppettest',
-            :access_id        => '9K3A362Bv2N9pGbfgA22',
-            :access_key       => '+95[jRp)8{~]+34_Xr5hk5ga47cvAp4!vRv]2b6%',
-        }
+      ensure: :present,
+      hostname: '172.16.208.131',
+      display_name: 'unittest',
+      collector: 'agent.localdomain',
+      description: 'unit testing',
+      disable_alerting: true,
+      groups: ['unittest'],
+      properties: { 'test1' => 'val1' },
+      account: 'puppettest',
+      access_id: '9K3A362Bv2N9pGbfgA22',
+      access_key: '+95[jRp)8{~]+34_Xr5hk5ga47cvAp4!vRv]2b6%',
     )
   end
 
@@ -25,7 +23,7 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'self.prefetch' do
     it 'exists' do
-      provider.class.prefetch({'device' => resource})
+      provider.class.prefetch('device' => resource)
     end
   end
 
@@ -44,20 +42,20 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'exists?' do
     it 'checks if device exists' do
-      expect(provider.exists?).to be_falsey
+      expect(provider).not_to be_exists
     end
   end
 
   describe 'create' do
     it 'creates a device' do
-      expect { provider.create }.to_not raise_error
+      expect { provider.create }.not_to raise_error
     end
   end
 
   describe 'update_device' do
     it 'updates a device' do
       groups = ['unittest']
-      props = {'test1' => 'val1'}
+      props = { 'test1' => 'val1' }
       expect {
         provider.update_device(nil,
                                '172.16.208.131',
@@ -67,14 +65,14 @@ describe Puppet::Type.type(:device).provider(:device) do
                                groups,
                                props,
                                true)
-      }.to_not raise_error
+      }.not_to raise_error
     end
   end
 
   describe 'build_device_json' do
     it 'builds device json successfully' do
       groups = ['unittest']
-      props = {'test1' => 'val1'}
+      props = { 'test1' => 'val1' }
       device_hash = provider.build_device_json(nil,
                                                '172.16.208.131',
                                                'unittest',
@@ -90,7 +88,7 @@ describe Puppet::Type.type(:device).provider(:device) do
       expect(device_hash['name']).to eq '172.16.208.131'
       expect(device_hash['name']).to be_an_instance_of String
       expect(device_hash['displayName']).to eq 'unittest'
-      expect(device_hash['preferredCollectorId']).to be_an_instance_of Fixnum
+      expect(device_hash['preferredCollectorId']).to be_an_instance_of Integer
       expect(device_hash['description']).to eq 'unit testing'
       expect(device_hash['hostGroupIds']).to be_an_instance_of String
       expect(device_hash['disableAlerting']).to be_truthy
@@ -100,7 +98,7 @@ describe Puppet::Type.type(:device).provider(:device) do
       expect(device_hash['customProperties'][0]['value']).to eq 'val1'
       expect(device_hash['customProperties'][1]).to be_an_instance_of Hash
       expect(device_hash['customProperties'][1]['name']).to eq 'puppet.update.on'
-      expect(device_hash['customProperties'][1]['value']).to_not be_nil
+      expect(device_hash['customProperties'][1]['value']).not_to be_nil
       expect(device_hash['scanConfigId']).to be 0
       expect(device_hash['netflowCollectorId']).to be 0
     end
@@ -131,7 +129,7 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'display_name=' do
     it 'updates the device\'s display_name' do
-      expect { provider.display_name=('updatedunittest') }.to_not raise_error
+      expect { provider.display_name = 'updatedunittest' }.not_to raise_error
     end
   end
 
@@ -143,7 +141,7 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'description=' do
     it 'updates the device\'s description' do
-      expect { provider.description=('updated unit testing') }.to_not raise_error
+      expect { provider.description = 'updated unit testing' }.not_to raise_error
     end
   end
 
@@ -155,7 +153,7 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'collector=' do
     it 'updates the device\'s collector description' do
-      expect { provider.collector=('puppet.localdomain') }.to_not raise_error
+      expect { provider.collector = 'puppet.localdomain' }.not_to raise_error
     end
   end
 
@@ -167,7 +165,7 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'disable_alerting=' do
     it 'updates the device\'s disable_alerting setting' do
-      expect { provider.disable_alerting=(false) }.to_not raise_error
+      expect { provider.disable_alerting = false }.not_to raise_error
     end
   end
 
@@ -182,7 +180,7 @@ describe Puppet::Type.type(:device).provider(:device) do
   describe 'groups=' do
     it 'updates the device\'s group(s)' do
       groups = ['unittest', 'unittest2']
-      expect { provider.groups=(groups) }.to_not raise_error
+      expect { provider.groups = groups }.not_to raise_error
     end
   end
 
@@ -197,14 +195,14 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'properties=' do
     it 'updates the device\'s propreties' do
-      properties = {'test1' => 'val1', 'test2' => 'val2'}
-      expect { provider.properties=(properties) }.to_not raise_error
+      properties = { 'test1' => 'val1', 'test2' => 'val2' }
+      expect { provider.properties = properties }.not_to raise_error
     end
   end
 
   describe 'destroy' do
     it 'destroys a device' do
-      expect { provider.destroy }.to_not raise_error
+      expect { provider.destroy }.not_to raise_error
     end
   end
 end

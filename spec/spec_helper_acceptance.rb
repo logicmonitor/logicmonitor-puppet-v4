@@ -12,10 +12,10 @@ RSpec.configure do |c|
 
   # Configure all nodes
   c.before :suite do
-    puppet_module_install(:source => project_root, :module_name => 'logicmonitor')
+    puppet_module_install(source: project_root, module_name: 'logicmonitor')
     hosts.each do |host|
-      on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
-      on host, puppet('module', 'install', 'puppetlabs-puppetdb'), { :acceptable_exit_codes => [0,1] }
+      on host, puppet('module', 'install', 'puppetlabs-stdlib'), acceptable_exit_codes: [0, 1]
+      on host, puppet('module', 'install', 'puppetlabs-puppetdb'), acceptable_exit_codes: [0, 1]
     end
   end
 end

@@ -1,6 +1,6 @@
 require_relative '../spec_helper'
 
-describe 'logicmonitor::collector', :type => :class do
+describe 'logicmonitor::collector', type: :class do
   context 'with all parameters' do
     it { is_expected.to compile }
 

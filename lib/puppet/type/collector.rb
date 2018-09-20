@@ -73,16 +73,16 @@ Puppet::Type.newtype(:collector) do
 
   newparam(:account) do
     desc 'This is the LogicMonitor account name'
-    validate {|value| raise ArgumentError, 'account may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'account may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_id) do
     desc 'This is a LogicMonitor user\'s API Token Access ID.'
-    validate {|value| raise ArgumentError, 'access_id may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'access_id may not be nil or empty' if value.nil? || value.empty? }
   end
 
   newparam(:access_key) do
     desc 'This is a LogicMonitor user\'s API Token Access Key.'
-    validate {|value| raise ArgumentError, 'access_key may not be nil or empty' if value.nil? || value.empty? }
+    validate { |value| raise ArgumentError, 'access_key may not be nil or empty' if value.nil? || value.empty? }
   end
 end

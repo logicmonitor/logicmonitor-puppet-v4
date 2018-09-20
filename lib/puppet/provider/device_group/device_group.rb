@@ -25,14 +25,14 @@ require 'net/https'
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'logicmonitor'))
 
-Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provider::Logicmonitor) do
+Puppet::Type.type(:device_group).provide(:device_group, parent: Puppet::Provider::Logicmonitor) do
   desc 'This provider handles the creation, status, and deletion of device groups'
 
   # Prefetch device instances. All device resources will use the same HTTPS connection
   def self.prefetch(instances)
     accounts = []
     @connections = {}
-    instances.each do |name,resource|
+    instances.each do |_name, resource|
       accounts.push(resource[:account])
     end
     accounts.uniq!
@@ -65,7 +65,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                            resource[:description],
                            resource[:properties],
                            resource[:disable_alerting])
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
   end
 
   # Deletes a Device Group
@@ -80,7 +80,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                                  Puppet::Provider::Logicmonitor::HTTP_DELETE)
       valid_api_response?(delete_device_group) ? nil : alert(delete_device_group)
     end
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
   end
 
   # Verifies the existence of a device group
@@ -93,7 +93,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     else
       device_group = get_device_group(connection, resource[:full_path])
       debug device_group unless nil_or_empty?(device_group)
-      debug "Finished in #{(Time.now-start)*1000.0} ms"
+      debug "Finished in #{(Time.now - start) * 1000.0} ms"
       nil_or_empty?(device_group) ? false : true
     end
   end
@@ -103,8 +103,8 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     start = Time.now
     debug "Checking description for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
-    device_group = get_device_group(connection, resource[:full_path],'description')
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    device_group = get_device_group(connection, resource[:full_path], 'description')
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
     device_group['description']
   end
 
@@ -118,7 +118,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         value,
                         resource[:properties],
                         resource[:disable_alerting])
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
   end
 
   # Get disable_alerting status of Device Group
@@ -126,8 +126,8 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     start = Time.now
     debug "Checking disable_alerting setting for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
-    device_group = get_device_group(connection, resource[:full_path],'disableAlerting')
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    device_group = get_device_group(connection, resource[:full_path], 'disableAlerting')
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
     device_group['disableAlerting'].to_s
   end
 
@@ -141,7 +141,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         resource[:description],
                         resource[:properties],
                         value)
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
   end
 
   # Retrieve Properties for device group (including password properties)
@@ -149,7 +149,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     start = Time.now
     debug "Checking properties for device group: \"#{resource[:full_path]}\""
     connection = self.class.get_connection(resource[:account])
-    properties = Hash.new
+    properties = {}
     device_group = get_device_group(connection, resource[:full_path], 'id')
     if device_group
       device_group_properties = rest(connection,
@@ -161,7 +161,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
         device_group_properties['data']['items'].each do |property|
           name = property['name']
           value = property['value']
-          if value.include?('********') && resource[:properties].has_key?(name)
+          if value.include?('********') && resource[:properties].key?(name)
             debug 'Found password property. Verifying'
             verify_device_group_property = rest(connection,
                                                 Puppet::Provider::Logicmonitor::DEVICE_GROUP_PROPERTIES_ENDPOINT % device_group['id'],
@@ -182,7 +182,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
     else
       alert device_group
     end
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
     properties
   end
 
@@ -196,7 +196,7 @@ Puppet::Type.type(:device_group).provide(:device_group, :parent => Puppet::Provi
                         resource[:description],
                         value,
                         resource[:disable_alerting])
-    debug "Finished in #{(Time.now-start)*1000.0} ms"
+    debug "Finished in #{(Time.now - start) * 1000.0} ms"
   end
 
   # Helper method for updating a Device Group via HTTP PATCH

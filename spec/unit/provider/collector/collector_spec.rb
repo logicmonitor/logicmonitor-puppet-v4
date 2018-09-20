@@ -4,14 +4,12 @@ require 'json'
 describe Puppet::Type.type(:collector).provider(:collector) do
   let :resource do
     Puppet::Type.type(:collector).new(
-      {
-        :ensure      => :present,
-        :description => 'UnitTestCollector',
-        :osfam       => 'RedHat',
-        :account     => 'puppettest',
-        :access_id   => '9K3A362Bv2N9pGbfgA22',
-        :access_key  => '+95[jRp)8{~]+34_Xr5hk5ga47cvAp4!vRv]2b6%',
-      }
+      ensure: :present,
+      description: 'UnitTestCollector',
+      osfam: 'RedHat',
+      account: 'puppettest',
+      access_id: '9K3A362Bv2N9pGbfgA22',
+      access_key: '+95[jRp)8{~]+34_Xr5hk5ga47cvAp4!vRv]2b6%',
     )
   end
 
@@ -21,7 +19,7 @@ describe Puppet::Type.type(:collector).provider(:collector) do
 
   describe 'exists?' do
     it 'checks if a collector record exists in LogicMonitor' do
-      expect(provider.exists?).to be_falsey
+      expect(provider).not_to be_exists
     end
   end
 
@@ -40,13 +38,13 @@ describe Puppet::Type.type(:collector).provider(:collector) do
 
   describe 'create' do
     it 'creates a collector record in LogicMonitor' do
-      expect(provider.create).to_not raise_error
+      expect(provider.create).not_to raise_error
     end
   end
 
   describe 'destroy' do
     it 'deletes a collector record in LogicMonitor' do
-      expect(provider.destroy).to_not raise_error
+      expect(provider.destroy).not_to raise_error
     end
   end
 end

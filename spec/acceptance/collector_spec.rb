@@ -12,8 +12,8 @@ RSpec.describe 'device collector definition' do
       include 'logicmonitor::collector'
     EOM
     it 'applies the manifest without errors' do
-      apply_manifest(manifest, :catch_failures => true)
-      expect(apply_manifest(manifest, :catch_failures => true).exit_code).to be 0
+      apply_manifest(manifest, catch_failures: true)
+      expect(apply_manifest(manifest, catch_failures: true).exit_code).to be 0
     end
   end
 end
