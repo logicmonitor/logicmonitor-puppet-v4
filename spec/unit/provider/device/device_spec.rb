@@ -31,14 +31,14 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'self.start_connection' do
     it 'creates a https connection' do
-      expect(provider.class.start_connection('lmsdacanay.logicmonitor.com')).to be_truthy
+      expect(provider.class.start_connection('puppettest.logicmonitor.com')).to be_truthy
     end
   end
 
   describe 'self.get_connection' do
     it 'retrieves a https connection for account' do
-      expect(provider.class.get_connection('lmsdacanay')).to be_truthy
-      expect(provider.class.get_connection('lmsdacanay')).to be_an_instance_of Net::HTTP
+      expect(provider.class.get_connection('puppettest')).to be_truthy
+      expect(provider.class.get_connection('puppettest')).to be_an_instance_of Net::HTTP
     end
   end
 
