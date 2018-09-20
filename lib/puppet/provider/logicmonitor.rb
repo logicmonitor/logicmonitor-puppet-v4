@@ -118,12 +118,14 @@ class Puppet::Provider::Logicmonitor < Puppet::Provider
     begin
       response = http.request(request)
 
-      if response.code == 429
+      if response.code == '429'
         rate_limited = true
         debug "Error: Request Rate Limited, sleep 1 second, retry"
         sleep 1
         raise 'Rate Limited'
-      elsif response.code < 200 || response.code >= 300
+      end 
+
+      unless response.kind_of? Net::HTTPSuccess
         alert "Request failed: endpoint: #{endpoint}, method: #{http_method}, data: #{data}, query_param: #{uri.query}, response code: #{response.code}, response body: #{response.body}"
         raise "Request Failed"
       end
