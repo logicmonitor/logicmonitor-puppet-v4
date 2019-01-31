@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper'
+require 'spec_helper'
 
 describe Puppet::Type.type(:device).provider(:device) do
   let :resource do
@@ -37,20 +37,23 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'self.get_connection' do
     it 'retrieves a https connection for account' do
-      expect(provider.class.get_connection('lmsdacanay')).to be_truthy
       expect(provider.class.get_connection('lmsdacanay')).to be_an_instance_of Net::HTTP
     end
   end
 
   describe 'exists?' do
     it 'checks if device exists' do
-      expect(provider.exists?).to be_falsey
+      VCR.use_cassette('device/exists') do
+        expect(provider.exists?).to be_falsey
+      end
     end
   end
 
   describe 'create' do
     it 'creates a device' do
-      expect { provider.create }.to_not raise_error
+      VCR.use_cassette('device/create') do
+        expect { provider.create }.to_not raise_error
+      end
     end
   end
 
@@ -58,16 +61,18 @@ describe Puppet::Type.type(:device).provider(:device) do
     it 'updates a device' do
       groups = ['unittest']
       props = {'test1' => 'val1'}
-      expect {
-        provider.update_device(nil,
-                               '172.16.208.131',
-                               'unittest',
-                               'agent.localdomain',
-                               'unit testing',
-                               groups,
-                               props,
-                               true)
-      }.to_not raise_error
+      VCR.use_cassette('device/update') do
+        expect {
+          provider.update_device(nil,
+                                 '172.16.208.131',
+                                 'unittest',
+                                 'agent.localdomain',
+                                 'unit testing',
+                                 groups,
+                                 props,
+                                 true)
+        }.to_not raise_error
+      end
     end
   end
 
@@ -75,14 +80,17 @@ describe Puppet::Type.type(:device).provider(:device) do
     it 'builds device json successfully' do
       groups = ['unittest']
       props = {'test1' => 'val1'}
-      device_hash = provider.build_device_json(nil,
-                                               '172.16.208.131',
-                                               'unittest',
-                                               'agent.localdomain',
-                                               'unit testing',
-                                               groups,
-                                               props,
-                                               true)
+      device_hash = nil
+      VCR.use_cassette('device/build_json') do
+        device_hash = provider.build_device_json(nil,
+                                                 '172.16.208.131',
+                                                 'unittest',
+                                                 'agent.localdomain',
+                                                 'unit testing',
+                                                 groups,
+                                                 props,
+                                                 true)
+      end
 
       # Note that we don't test actual value for preferredCollectorId and hostGroupIds
       # These fields are queried from logicmonitor (using methods that are tested in the logicmonitor_spec)
@@ -108,7 +116,10 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'get_device_by_display_name' do
     it 'retrieves the device successfully' do
-      device = provider.get_device_by_display_name(nil, 'unittest', 'displayName')
+      device = nil
+      VCR.use_cassette('device/get_by_display_name') do
+        device = provider.get_device_by_display_name(nil, 'unittest', 'displayName')
+      end
       expect(device).to be_an_instance_of Hash
       expect(device['displayName']).to eq 'unittest'
     end
@@ -116,7 +127,10 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'get_device_by_hostname' do
     it 'retrieves the device successfully' do
-      device = provider.get_device_by_hostname(nil, '172.16.208.131', 'agent.localdomain')
+      device = nil
+      VCR.use_cassette('device/get_by_hostname') do
+        device = provider.get_device_by_hostname(nil, '172.16.208.131', 'agent.localdomain')
+      end
       expect(device).to be_an_instance_of Hash
       expect(device['name']).to eq '172.16.208.131'
       expect(device['collectorDescription']).to eq 'agent.localdomain'
@@ -125,55 +139,70 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'display_name' do
     it 'retrieves the device\'s display_name' do
-      expect(provider.display_name).to eq 'unittest'
+      VCR.use_cassette('device/get_display_name') do
+        expect(provider.display_name).to eq 'unittest'
+      end
     end
   end
 
   describe 'display_name=' do
     it 'updates the device\'s display_name' do
-      expect { provider.display_name=('updatedunittest') }.to_not raise_error
+      VCR.use_cassette('device/set_display_name') do
+        expect { provider.display_name=('updatedunittest') }.to_not raise_error
+      end
     end
   end
 
   describe 'description' do
     it 'retrieves the device\'s description' do
-      expect(provider.description).to eq 'unit testing'
+      VCR.use_cassette('device/get_description') do
+        expect(provider.description).to eq 'unit testing'
+      end
     end
   end
 
   describe 'description=' do
     it 'updates the device\'s description' do
-      expect { provider.description=('updated unit testing') }.to_not raise_error
+      VCR.use_cassette('device/set_description') do
+        expect { provider.description=('updated unit testing') }.to_not raise_error
+      end
     end
   end
 
   describe 'collector' do
     it 'retrieves the device\'s collector description' do
-      expect(provider.collector).to eq 'agent.localdomain'
+      VCR.use_cassette('device/get_collector') do
+        expect(provider.collector).to eq 'agent.localdomain'
+      end
     end
   end
 
   describe 'collector=' do
     it 'updates the device\'s collector description' do
-      expect { provider.collector=('puppet.localdomain') }.to_not raise_error
+      VCR.use_cassette('device/set_collector') do
+        expect { provider.collector=('puppet.localdomain') }.to_not raise_error
+      end
     end
   end
 
-  describe 'disable_alerting' do
-    it 'retrieves the device\'s disable_alerting setting' do
-      expect(provider.disable_alerting).to eq 'true'
-    end
-  end
-
-  describe 'disable_alerting=' do
-    it 'updates the device\'s disable_alerting setting' do
-      expect { provider.disable_alerting=(false) }.to_not raise_error
-    end
-  end
-
+#  describe 'disable_alerting' do
+#    it 'retrieves the device\'s disable_alerting setting' do
+#      expect(provider.disable_alerting).to eq 'true'
+#    end
+#  end
+#
+#  describe 'disable_alerting=' do
+#    it 'updates the device\'s disable_alerting setting' do
+#      expect { provider.disable_alerting=(false) }.to_not raise_error
+#    end
+#  end
+#
   describe 'groups' do
     it 'retrieves the device\'s group(s)' do
-      groups = provider.groups
+      groups = nil
+      VCR.use_cassette('device/get_groups') do
+        groups = provider.groups
+      end
       expect(groups).to be_an_instance_of Array
       expect(groups.first).to eq 'unittest'
     end
@@ -181,14 +210,19 @@ describe Puppet::Type.type(:device).provider(:device) do
 
   describe 'groups=' do
     it 'updates the device\'s group(s)' do
-      groups = ['unittest', 'unittest2']
-      expect { provider.groups=(groups) }.to_not raise_error
+      groups = ['unittest', 'unitupdate']
+      VCR.use_cassette('device/set_groups') do
+        expect { provider.groups=(groups) }.to_not raise_error
+      end
     end
   end
 
   describe 'properties' do
     it 'retrieves the device\'s properties' do
-      properties = provider.properties
+      properties = nil
+      VCR.use_cassette('device/get_props') do
+        properties = provider.properties
+      end
       expect(properties).to be_an_instance_of Hash
       expect(properties.keys.first).to eq 'test1'
       expect(properties.values.first).to eq 'val1'
@@ -198,13 +232,17 @@ describe Puppet::Type.type(:device).provider(:device) do
   describe 'properties=' do
     it 'updates the device\'s propreties' do
       properties = {'test1' => 'val1', 'test2' => 'val2'}
-      expect { provider.properties=(properties) }.to_not raise_error
+      VCR.use_cassette('device/set_props') do
+        expect { provider.properties=(properties) }.to_not raise_error
+      end
     end
   end
 
   describe 'destroy' do
     it 'destroys a device' do
-      expect { provider.destroy }.to_not raise_error
+      VCR.use_cassette('device/destroy') do
+        expect { provider.destroy }.to_not raise_error
+      end
     end
   end
 end

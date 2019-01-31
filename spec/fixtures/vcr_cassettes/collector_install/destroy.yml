@@ -1,0 +1,53 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/setting/collectors?fields=id&filter=description:UnitTestCollector&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 9K3A362Bv2N9pGbfgA22:MWE0MjYyYTUxOTg5M2FlODAwMGVhZWFlMDdhYzE5OGMwMTdmNWE1MjI0OGU2N2MyZmNlMzI3ZWExMWY2OWE3Zg==:1549296363199
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 115-39
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '60'
+      Date:
+      - Mon, 04 Feb 2019 16:06:03 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "id" : 159
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Mon, 04 Feb 2019 16:06:03 GMT
+recorded_with: VCR 4.0.0

@@ -1,0 +1,95 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/setting/collectors?fields=id&filter=description:UnitTestCollector&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 9K3A362Bv2N9pGbfgA22:OWZhNDdmYTVkOWU0NGY1YTQ4ZGU2MDdmMDRiOTVhZTMxYThiMDFhNTI1MWNjZmNhMmE4ODc3OGY0MzUyNDM0OQ==:1549295174415
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 115-39
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '60'
+      Date:
+      - Mon, 04 Feb 2019 15:46:14 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "id" : 159
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Mon, 04 Feb 2019 15:46:14 GMT
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/setting/collectors/159/installers/linux64
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 9K3A362Bv2N9pGbfgA22:MTM4NDcwYzZkMDFjMzVjZDlmMWM3YjRlOGQwMWNlMmI3MDcwN2JiYjBhMmU4NjcyN2QyM2E2MjZhZjFlMTZhYQ==:1549295452636
+  response:
+    status:
+      code: 200 
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 115-39
+      Content-Type:
+      - text/html;charset=utf-8
+      Content-Language:
+      - en
+      Content-Length:
+      - '1081'
+      Date:
+      - Mon, 04 Feb 2019 15:50:52 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        PCFkb2N0eXBlIGh0bWw+PGh0bWwgbGFuZz0iZW4iPjxoZWFkPjx0aXRsZT5IVFRQIFN0YXR1cyA0MDEg4oCTIFVuYXV0aG9yaXplZDwvdGl0bGU+PHN0eWxlIHR5cGU9InRleHQvY3NzIj5oMSB7Zm9udC1mYW1pbHk6VGFob21hLEFyaWFsLHNhbnMtc2VyaWY7Y29sb3I6d2hpdGU7YmFja2dyb3VuZC1jb2xvcjojNTI1RDc2O2ZvbnQtc2l6ZToyMnB4O30gaDIge2ZvbnQtZmFtaWx5OlRhaG9tYSxBcmlhbCxzYW5zLXNlcmlmO2NvbG9yOndoaXRlO2JhY2tncm91bmQtY29sb3I6IzUyNUQ3Njtmb250LXNpemU6MTZweDt9IGgzIHtmb250LWZhbWlseTpUYWhvbWEsQXJpYWwsc2Fucy1zZXJpZjtjb2xvcjp3aGl0ZTtiYWNrZ3JvdW5kLWNvbG9yOiM1MjVENzY7Zm9udC1zaXplOjE0cHg7fSBib2R5IHtmb250LWZhbWlseTpUYWhvbWEsQXJpYWwsc2Fucy1zZXJpZjtjb2xvcjpibGFjaztiYWNrZ3JvdW5kLWNvbG9yOndoaXRlO30gYiB7Zm9udC1mYW1pbHk6VGFob21hLEFyaWFsLHNhbnMtc2VyaWY7Y29sb3I6d2hpdGU7YmFja2dyb3VuZC1jb2xvcjojNTI1RDc2O30gcCB7Zm9udC1mYW1pbHk6VGFob21hLEFyaWFsLHNhbnMtc2VyaWY7YmFja2dyb3VuZDp3aGl0ZTtjb2xvcjpibGFjaztmb250LXNpemU6MTJweDt9IGEge2NvbG9yOmJsYWNrO30gYS5uYW1lIHtjb2xvcjpibGFjazt9IC5saW5lIHtoZWlnaHQ6MXB4O2JhY2tncm91bmQtY29sb3I6IzUyNUQ3Njtib3JkZXI6bm9uZTt9PC9zdHlsZT48L2hlYWQ+PGJvZHk+PGgxPkhUVFAgU3RhdHVzIDQwMSDigJMgVW5hdXRob3JpemVkPC9oMT48aHIgY2xhc3M9ImxpbmUiIC8+PHA+PGI+VHlwZTwvYj4gU3RhdHVzIFJlcG9ydDwvcD48cD48Yj5NZXNzYWdlPC9iPiBVbmF1dGhvcml6ZWQ8L3A+PHA+PGI+RGVzY3JpcHRpb248L2I+IFRoZSByZXF1ZXN0IGhhcyBub3QgYmVlbiBhcHBsaWVkIGJlY2F1c2UgaXQgbGFja3MgdmFsaWQgYXV0aGVudGljYXRpb24gY3JlZGVudGlhbHMgZm9yIHRoZSB0YXJnZXQgcmVzb3VyY2UuPC9wPjxociBjbGFzcz0ibGluZSIgLz48aDM+TG9naWNNb25pdG9yIFRlY2huaWNhbCBPcGVyYXRpb25zPC9oMz48L2JvZHk+PC9odG1sPg==
+    http_version: 
+  recorded_at: Mon, 04 Feb 2019 15:50:53 GMT
+recorded_with: VCR 4.0.0

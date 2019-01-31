@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper'
+require 'spec_helper'
 
 describe Puppet::Type.type(:collector_installer).provider(:collector_installer) do
   let :resource do
@@ -19,40 +19,34 @@ describe Puppet::Type.type(:collector_installer).provider(:collector_installer) 
     resource.provider
   end
 
-  let :collector_api_resource do
-    Puppet::Type.type(:collector).new(
-      {
-        :ensure      => :present,
-        :description => 'UnitTestCollector',
-        :osfam       => 'RedHat',
-        :account     => 'lmsdacanay',
-        :access_id   => '9Y2AKV2GI8HU56BG924Y',
-        :access_key  => '3bbjV(tu]478Bt-7Q%7(A)Pe32uR2PhN8rj)dR)9',
-      }
-    )
-  end
-
-  let :collector_api_provider do
-    collector_api_resource.provider
-  end
-
   describe 'exists?' do
     it 'checks if a collector exists in LogicMonitor, and that the installation binary exists' do
-      collector_api_provider.create
-      expect(provider.exists?).to be_falsey
+      VCR.use_cassette('collector_install/exists') do
+        expect(provider.exists?).to be_falsey
+      end
     end
   end
 
   describe 'create' do
     it 'downloads and installs a LogicMonitor collector binary' do
-      expect(provider.create).to_not raise_error
+      allow(File).to receive(:open).and_yield(StringIO.new)
+      allow(File).to receive(:chmod).and_return(true)
+      allow(provider).to receive(:`).and_return(true) # stub out backticks
+
+      VCR.use_cassette('collector_install/create', record: :new_episodes) do
+        expect { provider.create }.to_not raise_error
+      end
     end
   end
 
   describe 'destroy' do
     it 'removes the LogicMonitor collector binary' do
-      expect(provider.destroy).to_not raise_error
-      collector_api_provider.destroy
+      allow(provider).to receive(:`).and_return(true) # stub out backticks
+      allow(File).to receive(:delete).and_return(true)
+
+      VCR.use_cassette('collector_install/destroy') do
+        expect {provider.destroy }.to_not raise_error
+      end
     end
   end
 end

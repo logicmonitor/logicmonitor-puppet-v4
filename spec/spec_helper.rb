@@ -46,3 +46,10 @@ def ensure_module_defined(module_name)
 end
 
 # 'spec_overrides' from sync.yml will appear below this line
+require 'webmock/rspec'
+require 'vcr'
+VCR.configure do |c|
+  c.cassette_library_dir = File.join(File.dirname(__FILE__), 'fixtures/vcr_cassettes')
+  c.default_cassette_options = { match_requests_on: [:method, :uri] }
+  c.hook_into :webmock
+end

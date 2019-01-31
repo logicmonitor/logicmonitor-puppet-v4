@@ -1,0 +1,103 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/setting/collectors?fields=id&filter=description:UnitTestCollector&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 9K3A362Bv2N9pGbfgA22:ZTkwZmUyNmI1ZDMxYjNmOTFlMDFiYmYyMDgyNDg4MTBiMjkyNTQzMTRkNzJiMjgyMmQ5NzNmYzA4YzlkMWFjYw==:1549135745474
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 115-39
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '60'
+      Date:
+      - Sat, 02 Feb 2019 19:29:05 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "id" : 1514
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Sat, 02 Feb 2019 19:29:05 GMT
+- request:
+    method: delete
+    uri: https://puppettest.logicmonitor.com/santaba/rest/setting/collectors/1514
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 9K3A362Bv2N9pGbfgA22:NTVjYzBlMDI3NzkzZjg1YzQzNTgzMmFkMjkwYjczMjk2NmQ1MDA5MDZiNmJmNmNkMWI5ODEyZjA1YTM5Mjg2ZA==:1549138619028
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 115-39
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '60'
+      Date:
+      - Sat, 02 Feb 2019 20:16:59 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "id" : 1514
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Sat, 02 Feb 2019 20:16:59 GMT
+recorded_with: VCR 4.0.0

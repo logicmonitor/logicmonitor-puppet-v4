@@ -1,0 +1,122 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/device/devices?fields=hostGroupIds&filter=displayName:unittest&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '700'
+      X-Rate-Limit-Remaining:
+      - '699'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '159'
+      Date:
+      - Wed, 30 Jan 2019 17:26:33 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "hostGroupIds" : "159,223,46"
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 17:26:34 GMT
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/device/groups?fields=appliesTo,fullPath&filter=id:159%7C%7Cid:223%7C%7Cid:46
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '400'
+      X-Rate-Limit-Remaining:
+      - '399'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '425'
+      Date:
+      - Wed, 30 Jan 2019 17:26:33 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 3,
+            "items" : [ {
+              "appliesTo" : "",
+              "fullPath" : "unittest"
+            }, {
+              "appliesTo" : "system.displayname !~ \"\\\\dn\\\\d|c\\\\d+c\" && system.displayname !~ \"engine*\"",
+              "fullPath" : "Logical Groups/Not Engine"
+            }, {
+              "appliesTo" : "isMisc()",
+              "fullPath" : "Devices by Type/Misc"
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 17:26:34 GMT
+recorded_with: VCR 4.0.0

@@ -1,0 +1,367 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/device/groups?fields=id&filter=fullPath:unittest&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '400'
+      X-Rate-Limit-Remaining:
+      - '399'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '140'
+      Date:
+      - Wed, 30 Jan 2019 17:26:30 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "id" : 159
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 17:26:31 GMT
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/setting/collectors?fields=id&filter=description:agent.localdomain&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '500'
+      X-Rate-Limit-Remaining:
+      - '499'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '140'
+      Date:
+      - Wed, 30 Jan 2019 17:26:30 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "id" : 205
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 17:26:31 GMT
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/device/groups?fields=id&filter=fullPath:unittest&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '400'
+      X-Rate-Limit-Remaining:
+      - '399'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '140'
+      Date:
+      - Wed, 30 Jan 2019 17:26:30 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 1,
+            "items" : [ {
+              "id" : 159
+            } ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 17:26:31 GMT
+- request:
+    method: post
+    uri: https://puppettest.logicmonitor.com/santaba/rest/device/devices
+    body:
+      encoding: UTF-8
+      string: '{"name":"172.16.208.131","displayName":"unittest","preferredCollectorId":205,"description":"unit
+        testing","hostGroupIds":"159","disableAlerting":"true","customProperties":[{"name":"test1","value":"val1"},{"name":"puppet.update.on","value":"2019-01-30T12:26:31-05:00"}],"scanConfigId":0,"netflowCollectorId":0}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '200'
+      X-Rate-Limit-Remaining:
+      - '199'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Date:
+      - Wed, 30 Jan 2019 17:26:31 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "id" : 1514,
+            "name" : "172.16.208.131",
+            "displayName" : "unittest",
+            "deviceType" : 0,
+            "relatedDeviceId" : -1,
+            "currentCollectorId" : 205,
+            "preferredCollectorId" : 205,
+            "preferredCollectorGroupId" : 1,
+            "preferredCollectorGroupName" : "@default",
+            "description" : "unit testing",
+            "createdOn" : 1548869191,
+            "updatedOn" : 1548869191,
+            "disableAlerting" : true,
+            "autoPropsAssignedOn" : 0,
+            "autoPropsUpdatedOn" : 0,
+            "scanConfigId" : 0,
+            "link" : "",
+            "enableNetflow" : false,
+            "netflowCollectorId" : 0,
+            "netflowCollectorGroupId" : 0,
+            "netflowCollectorGroupName" : null,
+            "lastDataTime" : 0,
+            "lastRawdataTime" : 0,
+            "hostGroupIds" : "159,223,46",
+            "sdtStatus" : "none-none-none",
+            "userPermission" : "write",
+            "hostStatus" : "normal",
+            "alertStatus" : "none",
+            "alertStatusPriority" : 100000,
+            "awsState" : 1,
+            "azureState" : 1,
+            "gcpState" : 1,
+            "alertDisableStatus" : "disable-disable-none",
+            "alertingDisabledOn" : {
+              "displayName" : "ENG",
+              "id" : 158,
+              "type" : "deviceGroup",
+              "userPermission" : "write"
+            },
+            "collectorDescription" : "agent.localdomain",
+            "netflowCollectorDescription" : null,
+            "customProperties" : [ {
+              "name" : "puppet.update.on",
+              "value" : "2019-01-30T12:26:31-05:00"
+            }, {
+              "name" : "test1",
+              "value" : "val1"
+            }, {
+              "name" : "system.categories",
+              "value" : ""
+            } ],
+            "upTimeInSeconds" : 0,
+            "deletedTimeInMs" : 0,
+            "toDeleteTimeInMs" : 0,
+            "hasDisabledSubResource" : false,
+            "ancestorHasDisabledLogicModule" : false,
+            "systemProperties" : [ {
+              "name" : "system.enablenetflow",
+              "value" : "false"
+            }, {
+              "name" : "system.collectorplatform",
+              "value" : "linux"
+            }, {
+              "name" : "system.description",
+              "value" : "unit testing"
+            }, {
+              "name" : "system.collectorid",
+              "value" : "205"
+            }, {
+              "name" : "system.deviceId",
+              "value" : "1514"
+            }, {
+              "name" : "system.prefcollectordesc",
+              "value" : "agent.localdomain"
+            }, {
+              "name" : "system.collectordesc",
+              "value" : "agent.localdomain"
+            }, {
+              "name" : "system.groups",
+              "value" : "unittest,Devices by Type/Misc,Logical Groups/Not Engine"
+            }, {
+              "name" : "system.deviceGroupId",
+              "value" : "159,223,46"
+            }, {
+              "name" : "system.resourceCreatedOn",
+              "value" : "1548869191"
+            }, {
+              "name" : "system.devicetype",
+              "value" : "0"
+            }, {
+              "name" : "system.collectorversion",
+              "value" : "25001"
+            }, {
+              "name" : "system.staticgroups",
+              "value" : "unittest"
+            }, {
+              "name" : "system.prefcollectorid",
+              "value" : "205"
+            }, {
+              "name" : "system.displayname",
+              "value" : "unittest"
+            }, {
+              "name" : "system.hostname",
+              "value" : "172.16.208.131"
+            } ],
+            "autoProperties" : [ ],
+            "inheritedProperties" : [ {
+              "name" : "jdbc.postgres.user",
+              "value" : "lgagent"
+            }, {
+              "name" : "snmp.community",
+              "value" : "********"
+            }, {
+              "name" : "xen.user",
+              "value" : "root"
+            }, {
+              "name" : "mysql.pass",
+              "value" : "********"
+            }, {
+              "name" : "jdbc.postgresql.port",
+              "value" : "5432"
+            }, {
+              "name" : "dbname",
+              "value" : "sitespect"
+            }, {
+              "name" : "jdbc.mysql.user",
+              "value" : "lgagent"
+            }, {
+              "name" : "xen.pass",
+              "value" : "********"
+            }, {
+              "name" : "jdbc.mysql.pass",
+              "value" : "********"
+            }, {
+              "name" : "mysql.user",
+              "value" : "lgagent"
+            }, {
+              "name" : "jdbc.postgres.pass",
+              "value" : "********"
+            } ]
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 17:26:31 GMT
+recorded_with: VCR 4.0.0

@@ -1,0 +1,111 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/device/devices?fields=id&filter=displayName:unittest&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '700'
+      X-Rate-Limit-Remaining:
+      - '699'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '115'
+      Date:
+      - Wed, 30 Jan 2019 16:53:41 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 0,
+            "items" : [ ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 16:53:42 GMT
+- request:
+    method: get
+    uri: https://puppettest.logicmonitor.com/santaba/rest/device/devices?filter=name:172.16.208.131,collectorDescription:agent.localdomain&size=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+      Authorization:
+      - LMv1 foo:bar:1548869193574
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      X-Content-Type-Options:
+      - nosniff
+      X-Server-Version:
+      - 114-65
+      X-Rate-Limit-Limit:
+      - '700'
+      X-Rate-Limit-Remaining:
+      - '699'
+      X-Rate-Limit-Window:
+      - '60'
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '115'
+      Date:
+      - Wed, 30 Jan 2019 16:53:42 GMT
+      Server:
+      - LM
+      Strict-Transport-Security:
+      - max-age=31536000;
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "status" : 200,
+          "errmsg" : "OK",
+          "data" : {
+            "total" : 0,
+            "items" : [ ],
+            "searchId" : null
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 30 Jan 2019 16:53:42 GMT
+recorded_with: VCR 4.0.0
