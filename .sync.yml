@@ -1,4 +1,9 @@
 ---
+Gemfile:
+  required:
+    ':development':
+      - gem: vcr
+      - gem: webmock
 spec/spec_helper.rb:
   mock_with: ':rspec'
   spec_overrides: |-
