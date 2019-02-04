@@ -52,8 +52,9 @@ Puppet::Type.type(:device).provide(:device, :parent => Puppet::Provider::Logicmo
   end
 
   # Retrieve an existing HTTPS Connection for an account
+  # Or create a new connection if one does not already exist
   def self.get_connection(account)
-    @connections[account]
+    @connections[account] ||= start_connection "#{account}.logicmonitor.com"
   end
 
   # Creates a Device for the specified resource
