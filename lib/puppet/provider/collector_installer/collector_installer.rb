@@ -66,9 +66,9 @@ Puppet::Type.type(:collector_installer).provide(:collector_installer, :parent =>
       `#{resource[:install_dir]}agent/bin/uninstall.pl`
 
       if resource[:architecture].include?('64')
-        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{id}_64.bin"
+        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{collector["id"]}_64.bin"
       else
-        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{id}_32.bin"
+        installation_binary = "#{resource[:install_dir]}logicmonitorsetup#{collector["id"]}_32.bin"
       end
       File.delete installation_binary
     end
