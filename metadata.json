@@ -1,12 +1,12 @@
 {
   "name": "logicmonitor-logicmonitor",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": "Samuel Dacanay",
   "summary": "A module for managing LogicMonitor devices, device groups, and collectors",
   "license": "Apache-2.0",
   "source": "https://github.com/logicmonitor/logicmonitor-puppet-v4",
   "project_page": "https://forge.puppet.com/logicmonitor/logicmonitor",
-  "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
+  "issues_url": "https://github.com/logicmonitor/logicmonitor-puppet-v4/issues",
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",

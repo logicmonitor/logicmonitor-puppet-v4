@@ -1,13 +1,12 @@
-#LogicMonitor-Puppet-v4
+# LogicMonitor
 
 LogicMonitor is a Cloud-based, full stack, IT infrastructure monitoring solution that
 allows you to manage your infrastructure monitoring from the Cloud.
-LogicMonitor-Puppet-v4 is a Puppet module for automating and managing your LogicMonitor
-(SaaS based, full stack, datacenter monitoring) portal via Puppet, specifically for version 4.
+This is a Puppet module for automating and managing your LogicMonitor
+(SaaS based, full stack, datacenter monitoring) portal via Puppet.
 
-##LogicMonitor's Puppet module overview
-LogicMonitor's Puppet module defines 5 classes and 4 custom resource types. For additional documentation visit 
-<insert Help Documentation URL>
+## Module overview
+LogicMonitor's Puppet module defines 5 classes and 4 custom resource types.
 
 Classes:
 * logicmonitor: Handles setting credentials needed for interacting with the LogicMonitor API.
@@ -53,9 +52,7 @@ Upcoming features:
 
 ## Requirements
 
-** Ruby (1.9.3, 2.0.X, 2.1.X) and Puppet 3.X OR 4.X **
-
-This is a module written for Puppet 4
+** Puppet >= 4.10 < 7.0.0 **
 
 ** Ruby Gems  JSON Gem **
 
@@ -77,11 +74,11 @@ This module uses exported resources extensively. Exported resources require stor
 
     $ puppet module install logicmonitor-logicmonitor
 
-### Installing via GitHub
+### Installing via R10k
 
-    $ cd /etc/puppet/modules
-    $ git clone git://github.com/logicmonitor/logicmonitor-puppet-v4.git
-    $ mv logicmonitor-puppet-v4 logicmonitor
+```ruby
+mod 'logicmonitor', '2.2.0'
+```
 
 ## Usage
 
